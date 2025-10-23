@@ -12,7 +12,7 @@
         </button>
       }
     </mat-form-field>
-    <button mat-raised-button color="primary" (click)="startCreate()">
+    <button mat-raised-button color="primary" (click)="startCreate()" disabled="{{ isEditing() }}">
       <mat-icon>add</mat-icon> Add Plant
     </button>
   </mat-card>

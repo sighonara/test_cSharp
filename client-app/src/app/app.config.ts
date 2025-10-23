@@ -14,7 +14,7 @@ export const appConfig: ApplicationConfig = {
       // With a more complicated app, I would have to do something more sophisticated.
       // NOTE FOR FUTURE ME: Do something more scalable.
       provide: DATE_PIPE_DEFAULT_OPTIONS,
-      useValue: { dateFormat: 'M/d/yy, HH:mm' }
+      useValue: { dateFormat: 'yyyy/M/d, HH:mm' }
     }
   ]
 };
