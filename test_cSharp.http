@@ -35,29 +35,33 @@ Content-Type: application/json
 
 > {%
     client.test("POST /plants returns 201", () => {
-        client.assert(response.status === 201 || response.status === 200, "Expected 201 Created or 200 OK");
+        client.assert(response.status === 201, "Expected 201 Created");
     });
 
-    client.global.set("newPlantId", response.body.id);
+    client.test("Response contains the created plant", () => {
+        client.assert(response.body.name === "Test Plant", "Expected correct plant name");
+    });
+    
+    client.global.set("newPlantName", response.body.name);
 %}
 
-### 3️⃣ Get that plant by ID
-GET {{baseUrl}}/plants/{{newPlantId}}
+### 3️⃣ Get that plant by name
+GET {{baseUrl}}/plants/Test Plant
 Accept: application/json
 
 > {%
-    client.test("GET by ID returns the plant", () => {
+    client.test("GET by name returns the plant", () => {
         client.assert(response.status === 200, "Expected 200 OK");
         client.assert(response.body.name === "Test Plant", "Expected correct plant name");
     });
 %}
 
 ### 4️⃣ Update the plant
-PUT {{baseUrl}}/plants/{{newPlantId}}
+PUT {{baseUrl}}/plants/Test Plant
 Content-Type: application/json
 
 {
-  "name": "Updated Plant",
+  "name": "Updated Test Plant",
   "scientificName": "Plantus testus var. updated",
   "habitat": "Garden",
   "somethingInteresting": "Now with more chlorophyll!"
@@ -67,13 +71,74 @@ Content-Type: application/json
     client.test("PUT /plants updates successfully", () => {
         client.assert(response.status === 200, "Expected 200 OK");
     });
+    
+    client.global.set("updatedPlantName", "Updated Test Plant");
 %}
 
-### 5️⃣ Delete the plant
-DELETE {{baseUrl}}/plants/{{newPlantId}}
+### 5️⃣ Verify the plant was updated
+GET {{baseUrl}}/plants/Updated Test Plant
+Accept: application/json
+
+> {%
+    client.test("GET updated plant returns correct data", () => {
+        client.assert(response.status === 200, "Expected 200 OK");
+        client.assert(response.body.name === "Updated Test Plant", "Expected updated name");
+        client.assert(response.body.scientificName === "Plantus testus var. updated", "Expected updated scientific name");
+    });
+%}
+
+### 6️⃣ Delete the plant
+DELETE {{baseUrl}}/plants/Updated Test Plant
 
 > {%
     client.test("DELETE /plants removes the plant", () => {
-        client.assert(response.status === 200 || response.status === 204, "Expected success on delete");
+        client.assert(response.status === 204, "Expected 204 No Content");
+    });
+%}
+
+### 7️⃣ Verify the plant was deleted
+GET {{baseUrl}}/plants/Updated Test Plant
+Accept: application/json
+
+> {%
+    client.test("GET deleted plant returns 404", () => {
+        client.assert(response.status === 404, "Expected 404 Not Found");
+    });
+%}
+
+### 8️⃣ Try to delete non-existent plant
+DELETE {{baseUrl}}/plants/Nonexistent Plant
+
+> {%
+    client.test("DELETE non-existent plant returns 404", () => {
+        client.assert(response.status === 404, "Expected 404 Not Found");
+    });
+%}
+
+### 9️⃣ Try to create duplicate plant
+POST {{baseUrl}}/plants
+Content-Type: application/json
+
+{
+  "name": "Rose",
+  "scientificName": "Rosa duplicate",
+  "habitat": "Test",
+  "somethingInteresting": "This should fail"
+}
+
+> {%
+    client.test("POST duplicate plant returns 409 Conflict", () => {
+        client.assert(response.status === 409, "Expected 409 Conflict");
+    });
+%}
+
+### 🔟 Get a specific existing plant (case-insensitive)
+GET {{baseUrl}}/plants/rose
+Accept: application/json
+
+> {%
+    client.test("GET with different case returns plant", () => {
+        client.assert(response.status === 200, "Expected 200 OK");
+        client.assert(response.body.name === "Rose", "Expected Rose plant");
     });
 %}
