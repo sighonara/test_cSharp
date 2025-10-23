@@ -10,6 +10,18 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Add CORS Policy. Needed to allow Angular App to access the API.
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularApp",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:4200") // Angular default port
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
+
 var app = builder.Build();
 app.Services.GetRequiredService<PlantService>();
 
@@ -20,6 +32,9 @@ if (app.Environment.IsDevelopment()) {
 }
 
 app.UseHttpsRedirection();
+
+// Use CORS (must be before UseAuthorization)
+app.UseCors("AllowAngularApp");
 
 app.UseAuthorization();
 

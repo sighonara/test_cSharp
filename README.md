@@ -1,7 +1,10 @@
 # A test-case utilizing C#
 
 ## Prerequisites:
+### C# backend
 - .NET SDK 8.0+ installed (tested with 8.0.121)
+### Angular frontend
+- Node.js 20+. Tested with v22.21.0
 
 ## Backend API (ASP.NET Core Web API)
 A minimal ASP.NET Core Web API project has been scaffolded to mirror the Visual Studio "ASP.NET Core Web API" template (no front-end). It includes Swagger for API exploration in Development and 4 sample `/plants` endpoints, one for each CRUD operation.
