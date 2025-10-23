@@ -10,7 +10,8 @@ namespace test_cSharp.Services;
 public class PlantService {
     private readonly ILogger<PlantService> _logger;
     private const string FilePath = "plants.json";
-    public List<Plant> Plants { get; private set; }
+    private Dictionary<string, Plant> _plants { get; set; }
+    public IEnumerable<Plant> Plants => _plants.Values;
     private readonly JsonSerializerOptions _options = new() { WriteIndented = true };
 
     public PlantService(ILogger<PlantService> logger) {
@@ -25,8 +26,20 @@ public class PlantService {
             }
 
             var json = File.ReadAllText(FilePath);
-            Plants = JsonSerializer.Deserialize<List<Plant>>(json) ?? throw new Exception("Failed to deserialize");
-            Console.WriteLine("Loaded " + Plants.Count + " plants");
+            var plantList = JsonSerializer.Deserialize<List<Plant>>(json) ?? throw new Exception("Failed to deserialize");
+            
+            _plants = new Dictionary<string, Plant>();
+            
+            foreach (var plant in plantList) {
+                if (_plants.ContainsKey(plant.Name)) {
+                    _logger.LogWarning("Duplicate plant name '{PlantName}' found during load. Skipping.", plant.Name);
+                    continue;
+                }
+                
+                _plants[plant.Name] = plant;
+            }
+            
+            Console.WriteLine("Loaded " + _plants.Count + " plants");
         } catch (Exception e)
         {
             Console.WriteLine(e);
@@ -35,8 +48,48 @@ public class PlantService {
         }
     }
 
-    public void SavePlants() {
-        var json = JsonSerializer.Serialize(Plants, _options);
+    private void SavePlants() {
+        var plantList = _plants.Values.ToList();
+        var json = JsonSerializer.Serialize(plantList, _options);
         File.WriteAllText(FilePath, json);
+    }
+
+    public Plant? GetPlant(string name) {
+        return _plants.GetValueOrDefault(name);
+    }
+    
+    public void CreatePlant(Plant plant) {
+        if (_plants.ContainsKey(plant.Name)) {
+            throw new InvalidOperationException($"Plant with name '{plant.Name}' already exists.");
+        }
+        
+        _plants[plant.Name] = plant;
+        // SavePlants();
+    }
+    
+    public void UpdatePlant(string originalName, Plant plant) {
+        if (!_plants.ContainsKey(originalName)) {
+            throw new KeyNotFoundException($"Plant '{originalName}' not found.");
+        }
+        
+        // If the name is changing, check for duplicates
+        if (originalName != plant.Name && _plants.ContainsKey(plant.Name)) {
+            throw new InvalidOperationException($"Plant with name '{plant.Name}' already exists.");
+        }
+        
+        // Remove old entry if name changed
+        if (originalName != plant.Name) {
+            _plants.Remove(originalName);
+        }
+        
+        plant.Updated = DateTime.Now;
+        _plants[plant.Name] = plant;
+        // SavePlants();
+    }
+    
+    public void DeletePlant(string name) {
+        if (_plants.Remove(name)) {
+            // SavePlants();
+        }
     }
 }
