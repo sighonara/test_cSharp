@@ -16,6 +16,7 @@ public class PlantService {
 
     public PlantService(ILogger<PlantService> logger) {
         _logger = logger;
+        _plants = new Dictionary<string, Plant>(StringComparer.OrdinalIgnoreCase);
         LoadPlants();
     }
 
@@ -28,7 +29,7 @@ public class PlantService {
             var json = File.ReadAllText(FilePath);
             var plantList = JsonSerializer.Deserialize<List<Plant>>(json) ?? throw new Exception("Failed to deserialize");
             
-            _plants = new Dictionary<string, Plant>();
+            _plants.Clear();
             
             foreach (var plant in plantList) {
                 if (_plants.ContainsKey(plant.Name)) {
@@ -87,9 +88,11 @@ public class PlantService {
         // SavePlants();
     }
     
-    public void DeletePlant(string name) {
-        if (_plants.Remove(name)) {
+    public bool DeletePlant(string name) {
+        var wasDeleted = _plants.Remove(name);
+        if (wasDeleted) {
             // SavePlants();
         }
+        return wasDeleted;
     }
 }

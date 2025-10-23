@@ -48,7 +48,10 @@ public class PlantsController(PlantService plantsService, ILogger<PlantsControll
 
     [HttpDelete("{name}", Name = "DeletePlant")]
     public ActionResult Delete(string name) {
-        plantsService.DeletePlant(name);
-        return NoContent();
+        var wasDeleted = plantsService.DeletePlant(name);
+        if (wasDeleted) {
+            return NoContent();
+        }
+        return NotFound($"Plant '{name}' not found.");
     }
 }
