@@ -1,0 +1,79 @@
+@baseUrl = http://localhost:5155
+
+### 1️⃣ Get all plants
+GET {{baseUrl}}/plants
+Accept: application/json
+
+> {%
+    // ✅ Assert: Response should be 200 OK
+    client.test("GET /plants returns 200", () => {
+        client.assert(response.status === 200, "Expected 200 OK");
+    });
+
+    // ✅ Assert: Response should be an array
+    const data = response.body;
+    client.test("Response is an array", () => {
+        client.assert(Array.isArray(data), "Expected an array");
+    });
+
+    // ✅ Assert: Array is not empty
+    client.test("Array is not empty", () => {
+        client.assert(data.length > 0, "Expected non-empty array");
+    });
+%}
+
+### 2️⃣ Create a new plant
+POST {{baseUrl}}/plants
+Content-Type: application/json
+
+{
+  "name": "Test Plant",
+  "scientificName": "Plantus testus",
+  "habitat": "Greenhouse",
+  "somethingInteresting": "Grows best when sung to."
+}
+
+> {%
+    client.test("POST /plants returns 201", () => {
+        client.assert(response.status === 201 || response.status === 200, "Expected 201 Created or 200 OK");
+    });
+
+    client.global.set("newPlantId", response.body.id);
+%}
+
+### 3️⃣ Get that plant by ID
+GET {{baseUrl}}/plants/{{newPlantId}}
+Accept: application/json
+
+> {%
+    client.test("GET by ID returns the plant", () => {
+        client.assert(response.status === 200, "Expected 200 OK");
+        client.assert(response.body.name === "Test Plant", "Expected correct plant name");
+    });
+%}
+
+### 4️⃣ Update the plant
+PUT {{baseUrl}}/plants/{{newPlantId}}
+Content-Type: application/json
+
+{
+  "name": "Updated Plant",
+  "scientificName": "Plantus testus var. updated",
+  "habitat": "Garden",
+  "somethingInteresting": "Now with more chlorophyll!"
+}
+
+> {%
+    client.test("PUT /plants updates successfully", () => {
+        client.assert(response.status === 200, "Expected 200 OK");
+    });
+%}
+
+### 5️⃣ Delete the plant
+DELETE {{baseUrl}}/plants/{{newPlantId}}
+
+> {%
+    client.test("DELETE /plants removes the plant", () => {
+        client.assert(response.status === 200 || response.status === 204, "Expected success on delete");
+    });
+%}
