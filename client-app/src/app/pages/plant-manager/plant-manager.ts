@@ -1,6 +1,6 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { Component, OnInit, signal, computed, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -13,12 +13,15 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { PlantService } from '../../services/plant.service';
 import { Plant } from '../../models/plant';
+import { uniqueNameValidator } from '../../customValidators/uniqueNameValidator';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-plant-manager',
   imports: [
     CommonModule,
     FormsModule,
+    ReactiveFormsModule,
     MatTableModule,
     MatButtonModule,
     MatIconModule,
@@ -33,7 +36,7 @@ import { Plant } from '../../models/plant';
   templateUrl: './plant-manager.html',
   styleUrl: './plant-manager.scss'
 })
-export class PlantManagerComponent implements OnInit {
+export class PlantManagerComponent implements OnInit, OnDestroy {
   plants = signal<Plant[]>([]);
   filteredPlants = signal<Plant[]>([]);
   searchTerm = signal('');
@@ -50,62 +53,63 @@ export class PlantManagerComponent implements OnInit {
     updated: new Date()
   });
 
+  // Form control for name with custom validator
+  nameControl = new FormControl('', [
+    Validators.required,
+    uniqueNameValidator(
+      () => this.plants(),
+      () => this.editingPlant?.name
+    )
+  ]);
+  private nameSubscription?: Subscription;
+
   // Comparison state
   comparisonMode = signal(false);
   selectedForComparison = signal<Plant[]>([]);
   isComparing = computed(() => this.selectedForComparison().length === 2);
 
-  // Validation - reactive to name changes
-  nameExists = computed(() => {
-    const currentName = this.currentPlant().name.trim().toLowerCase();
-    if (!currentName) return false;
-
-    const editingName = this.editingPlant?.name.toLowerCase();
-
-    console.info('Checking for name exists: ' + this.plants().some(plant =>
-      plant.name.toLowerCase() === currentName &&
-      plant.name.toLowerCase() !== editingName
-    ));
-    return this.plants().some(plant =>
-      plant.name.toLowerCase() === currentName &&
-      plant.name.toLowerCase() !== editingName
-    );
-  });
-
   canSave = computed(() => {
     const plant = this.currentPlant();
-    return plant.name.trim() !== '' &&
-           plant.scientificName.trim() !== '' &&
-           plant.habitat.trim() !== '' &&
-           plant.somethingInteresting.trim() !== '' &&
-           !this.nameExists();
+    return this.nameControl.valid &&
+      plant.scientificName.trim() !== '' &&
+      plant.habitat.trim() !== '' &&
+      plant.somethingInteresting.trim() !== '';
   });
 
   displayedColumns = computed(() =>
-      this.comparisonMode()
+    this.comparisonMode()
       ? ['select', 'name', 'scientificName', 'habitat', 'somethingInteresting', 'updated', 'actions']
       : ['name', 'scientificName', 'habitat', 'somethingInteresting', 'updated', 'actions']
   );
-
-  // This appears to be required to get the necessary functionality of checking if the name already exists.
-  // FUTURE: figure out a more elegant solution.
-  updatePlantName(newName: string) {
-    console.info('Updating plant name: ' + newName);
-    this.currentPlant.set({
-      ...this.currentPlant(),
-      name: newName
-    });
-  }
 
   readonly dateFormat = 'yyyy/M/d, HH:mm';
 
   constructor(
     private plantService: PlantService,
     private snackBar: MatSnackBar
-  ) {}
+  ) {
+    // Subscribe to name changes
+    this.nameSubscription = this.nameControl.valueChanges.subscribe(newName => {
+      if (newName !== null) {
+        this.currentPlant.set({
+          ...this.currentPlant(),
+          name: newName
+        });
+      }
+    });
+  }
 
   ngOnInit() {
     this.loadPlants();
+  }
+
+  ngOnDestroy() {
+    this.nameSubscription?.unsubscribe();
+  }
+
+  // Call this to re-run validation when plants list changes
+  private revalidateName() {
+    this.nameControl.updateValueAndValidity();
   }
 
   loadPlants() {
@@ -113,6 +117,7 @@ export class PlantManagerComponent implements OnInit {
       next: (data) => {
         this.plants.set(data);
         this.filteredPlants.set(data);
+        this.revalidateName();
       },
       error: (err) => this.showError('Failed to load plants')
     });
@@ -128,7 +133,6 @@ export class PlantManagerComponent implements OnInit {
     const field = this.searchField();
     const filtered = this.plants().filter(p => {
       if (field === 'updated') {
-        // Format the date the same way it's displayed, then search
         const formattedDate = new Date(p.updated).toLocaleString('en-US', {
           year: 'numeric',
           month: 'numeric',
@@ -159,34 +163,46 @@ export class PlantManagerComponent implements OnInit {
   startCreate() {
     this.isEditing.set(true);
     this.editingPlant = null;
-    this.currentPlant.set({
+    const newPlant = {
       name: '',
       scientificName: '',
       habitat: '',
       somethingInteresting: '',
       updated: new Date()
-    });
+    };
+    this.currentPlant.set(newPlant);
+    this.nameControl.setValue('');
+    this.nameControl.markAsUntouched();
   }
 
   startEdit(plant: Plant) {
     this.isEditing.set(true);
     this.editingPlant = plant;
     this.currentPlant.set({ ...plant });
+    this.nameControl.setValue(plant.name);
+    this.nameControl.markAsUntouched();
+    this.revalidateName();
   }
 
   startCopy(plant: Plant) {
     this.isEditing.set(true);
     this.editingPlant = null;
-    this.currentPlant.set({
+    const copiedPlant = {
       ...plant,
       name: `${plant.name} (Copy)`,
       updated: new Date()
-    });
+    };
+    this.currentPlant.set(copiedPlant);
+    this.nameControl.setValue(copiedPlant.name);
+    this.nameControl.markAsTouched(); // Mark as touched so error shows immediately
+    this.revalidateName();
   }
 
   cancelEdit() {
     this.isEditing.set(false);
     this.editingPlant = null;
+    this.nameControl.setValue('');
+    this.nameControl.markAsUntouched();
   }
 
   save() {

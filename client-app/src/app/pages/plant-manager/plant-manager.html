@@ -59,10 +59,13 @@
     <mat-card class="form-card">
       <h2>{{ editingPlant ? 'Edit Plant' : 'Create New Plant' }}</h2>
 
-      <mat-form-field [class.mat-form-field-invalid]="nameExists()">
+      <mat-form-field>
         <mat-label>Name</mat-label>
-        <input matInput [ngModel]="currentPlant().name" required (ngModelChange)="updatePlantName($event)">
-        @if (nameExists()) {
+        <input matInput [formControl]="nameControl" required>
+        @if (nameControl.hasError('required')) {
+          <mat-error>Name is required</mat-error>
+        }
+        @if (nameControl.hasError('nameExists')) {
           <mat-error>A plant with this name already exists</mat-error>
         }
       </mat-form-field>
