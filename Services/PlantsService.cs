@@ -3,10 +3,9 @@ using test_cSharp.Models;
 
 namespace test_cSharp.Services;
 
-/**
- * This service is used to load and save the plants.json file.
- * In a larger application, this would be rejiggered to fetch and save from a database.
- */
+// FUTURE: Replace in-memory JSON storage with database (SQL Server, PostgreSQL, or NoSQL like MongoDB)
+// FUTURE: Implement optimistic concurrency control with ETags or row versioning
+// Far FUTURE: Add caching layer (Redis/IMemoryCache) for frequently accessed plant data
 public class PlantService {
     private readonly ILogger<PlantService> _logger;
     private const string FilePath = "plants.json";
@@ -65,7 +64,7 @@ public class PlantService {
         }
         
         _plants[plant.Name] = plant;
-        // SavePlants();
+        SavePlants();
     }
     
     public void UpdatePlant(string originalName, Plant plant) {
@@ -85,13 +84,13 @@ public class PlantService {
         
         plant.Updated = DateTime.Now;
         _plants[plant.Name] = plant;
-        // SavePlants();
+        SavePlants();
     }
     
     public bool DeletePlant(string name) {
         var wasDeleted = _plants.Remove(name);
         if (wasDeleted) {
-            // SavePlants();
+            SavePlants();
         }
         return wasDeleted;
     }

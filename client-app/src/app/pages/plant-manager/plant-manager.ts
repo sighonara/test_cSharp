@@ -36,6 +36,11 @@ import { toSignal } from '@angular/core/rxjs-interop';
   templateUrl: './plant-manager.html',
   styleUrl: './plant-manager.scss'
 })
+// FUTURE: Add pagination support for large plant collections (and overcome hurdles with comparison when we do.
+// FUTURE: Add bulk operations (multi-select delete, bulk edit)
+// FUTURE: Add export/import functionality (CSV/JSON)
+// FUTURE: Add undo/redo support with action history
+// FUTURE: Implement offline support with service workers (PWA)
 export class PlantManagerComponent implements OnInit {
   // ---- Constants ---- //
   readonly dateFormat = 'yyyy/M/d, HH:mm';
@@ -62,25 +67,26 @@ export class PlantManagerComponent implements OnInit {
   comparisonMode = signal(false);
   selectedForComparison = signal<Plant[]>([]);
 
-  // Form control validators. Needed for better UI of validation errors.
   nameControl = new FormControl('', [
     Validators.required,
     uniqueNameValidator(
-      () => this.plants(),
-      () => this.editingPlant?.name
+      () => this.plants(), // Provides current plant list
+      () => this.editingPlant?.name // Excludes currently edited plant from duplicate check
     )
   ]);
   scienceNameControl = new FormControl('', [Validators.required]);
   habitatControl = new FormControl('', [Validators.required]);
   somethingInterestingControl = new FormControl('', [Validators.required]);
 
-  // Convert FormControl status to signals using toSignal
+  // This bridges Angular's reactive forms with signals for computed reactivity
+  // FUTURE: Make sure the Angular app is fully reactive (rather than both reactive and using templates)
   nameStatus = toSignal(this.nameControl.statusChanges, { initialValue: 'INVALID' });
   scienceNameStatus = toSignal(this.scienceNameControl.statusChanges, { initialValue: 'INVALID' });
   habitatStatus = toSignal(this.habitatControl.statusChanges, { initialValue: 'INVALID' });
   somethingInterestingStatus = toSignal(this.somethingInterestingControl.statusChanges, { initialValue: 'INVALID' });
 
   // ---- Computed Signals/Watches ---- //
+
   filteredPlants = computed(() => {
     const term = this.searchTerm().toLowerCase();
     const field = this.searchField();

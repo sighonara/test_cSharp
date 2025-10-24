@@ -4,6 +4,9 @@ import { Observable } from 'rxjs';
 import { Plant } from '../models/plant';
 import { environment } from '../../environments/environment';
 
+// FUTURE: Add WebSocket support for real-time synchronization of plant changes across multiple clients
+// FUTURE: Implement optimistic updates with rollback on conflict
+// FUTURE: Add request caching/memoization for frequently accessed data
 @Injectable({
   providedIn: 'root'
 })
