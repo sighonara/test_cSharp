@@ -41,7 +41,7 @@ if (app.Environment.IsDevelopment()) {
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection(); // FUTURE: Enable HTTPS
 
 // Use CORS (must be before UseAuthorization)
 app.UseCors("AllowAngularApp");
