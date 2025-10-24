@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, computed, OnDestroy } from '@angular/core';
+import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
@@ -14,7 +14,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { PlantService } from '../../services/plant.service';
 import { Plant } from '../../models/plant';
 import { uniqueNameValidator } from '../../customValidators/uniqueNameValidator';
-import { Subscription } from 'rxjs';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-plant-manager',
@@ -36,71 +36,21 @@ import { Subscription } from 'rxjs';
   templateUrl: './plant-manager.html',
   styleUrl: './plant-manager.scss'
 })
-export class PlantManagerComponent implements OnInit, OnDestroy {
+export class PlantManagerComponent implements OnInit {
   // ---- Constants ---- //
   readonly dateFormat = 'yyyy/M/d, HH:mm';
 
   // ---- Public Properties ---- //
   editingPlant: Plant | null = null;
 
-  // ---- Private Properties ---- //
-  private nameSubscription?: Subscription;
-  private scienceNameSubscription?: Subscription;
-  private habitatSubscription?: Subscription;
-  private somethingInterestingSubscription?: Subscription;
-
   // ---- Lifecycle ---- //
   constructor(
     private plantService: PlantService,
     private snackBar: MatSnackBar
-  ) {
-    this.nameSubscription = this.nameControl.valueChanges.subscribe(newName => {
-      if (newName !== null) {
-        this.currentPlant.set({
-          ...this.currentPlant(),
-          name: newName
-        });
-      }
-      this.nameValid.set(this.nameControl.valid);
-    });
-    this.scienceNameSubscription = this.scienceNameControl.valueChanges.subscribe(newName => {
-      if (newName !== null) {
-        this.currentPlant.set({
-          ...this.currentPlant(),
-          scientificName: newName
-        });
-      }
-      this.scienceNameValid.set(this.scienceNameControl.valid);
-    });
-    this.habitatSubscription = this.habitatControl.valueChanges.subscribe(newHabitat => {
-      if (newHabitat !== null) {
-        this.currentPlant.set({
-          ...this.currentPlant(),
-          habitat: newHabitat
-        });
-      }
-      this.habitatValid.set(this.habitatControl.valid);
-    });
-    this.somethingInterestingSubscription = this.somethingInterestingControl.valueChanges.subscribe(newSomethingInteresting => {
-      if (newSomethingInteresting !== null) {
-        this.currentPlant.set({
-          ...this.currentPlant(),
-          somethingInteresting: newSomethingInteresting
-        })
-      }
-      this.somethingInterestingValid.set(this.somethingInterestingControl.valid);
-    })
-  }
+  ) {}
 
   ngOnInit() {
     this.loadPlants();
-  }
-
-  ngOnDestroy() {
-    this.nameSubscription?.unsubscribe();
-    this.scienceNameSubscription?.unsubscribe();
-    this.habitatSubscription?.unsubscribe();
-    this.somethingInterestingSubscription?.unsubscribe();
   }
 
   // ---- Signals/Watches ---- //
@@ -111,14 +61,6 @@ export class PlantManagerComponent implements OnInit, OnDestroy {
   isEditing = signal(false);
   comparisonMode = signal(false);
   selectedForComparison = signal<Plant[]>([]);
-
-  currentPlant = signal<Plant>({
-    name: '',
-    scientificName: '',
-    habitat: '',
-    somethingInteresting: '',
-    updated: new Date()
-  });
 
   // Form control validators. Needed for better UI of validation errors.
   nameControl = new FormControl('', [
@@ -132,11 +74,11 @@ export class PlantManagerComponent implements OnInit, OnDestroy {
   habitatControl = new FormControl('', [Validators.required]);
   somethingInterestingControl = new FormControl('', [Validators.required]);
 
-  // Signals to track form validity (needed for computed canSave signal)
-  nameValid = signal(false);
-  scienceNameValid = signal(false);
-  habitatValid = signal(false);
-  somethingInterestingValid = signal(false);
+  // Convert FormControl status to signals using toSignal
+  nameStatus = toSignal(this.nameControl.statusChanges, { initialValue: 'INVALID' });
+  scienceNameStatus = toSignal(this.scienceNameControl.statusChanges, { initialValue: 'INVALID' });
+  habitatStatus = toSignal(this.habitatControl.statusChanges, { initialValue: 'INVALID' });
+  somethingInterestingStatus = toSignal(this.somethingInterestingControl.statusChanges, { initialValue: 'INVALID' });
 
   // ---- Computed Signals/Watches ---- //
   filteredPlants = computed(() => {
@@ -169,10 +111,10 @@ export class PlantManagerComponent implements OnInit, OnDestroy {
   isComparing = computed(() => this.selectedForComparison().length === 2);
 
   canSave = computed(() => {
-    return this.nameValid() &&
-      this.scienceNameValid() &&
-      this.habitatValid() &&
-      this.somethingInterestingValid();
+    return this.nameStatus() === 'VALID' &&
+      this.scienceNameStatus() === 'VALID' &&
+      this.habitatStatus() === 'VALID' &&
+      this.somethingInterestingStatus() === 'VALID';
   });
 
   displayedColumns = computed(() =>
@@ -207,85 +149,49 @@ export class PlantManagerComponent implements OnInit, OnDestroy {
   startCreate() {
     this.isEditing.set(true);
     this.editingPlant = null;
-    const newPlant = {
-      name: '',
-      scientificName: '',
-      habitat: '',
-      somethingInteresting: '',
-      updated: new Date()
-    };
-    this.currentPlant.set(newPlant);
-    this.nameControl.setValue('');
-    this.scienceNameControl.setValue('');
-    this.habitatControl.setValue('');
-    this.somethingInterestingControl.setValue('');
-    this.nameControl.markAsUntouched();
-    this.scienceNameControl.markAsUntouched();
-    this.habitatControl.markAsUntouched();
-    this.somethingInterestingControl.markAsUntouched();
-    this.updateValiditySignals();
+    this.nameControl.reset('');
+    this.scienceNameControl.reset('');
+    this.habitatControl.reset('');
+    this.somethingInterestingControl.reset('');
   }
 
   startEdit(plant: Plant) {
     this.isEditing.set(true);
     this.editingPlant = plant;
-    this.currentPlant.set({ ...plant });
-    this.nameControl.setValue(plant.name);
-    this.scienceNameControl.setValue(plant.scientificName);
-    this.habitatControl.setValue(plant.habitat);
-    this.somethingInterestingControl.setValue(plant.somethingInteresting);
-    this.nameControl.markAsUntouched();
-    this.scienceNameControl.markAsUntouched();
-    this.habitatControl.markAsUntouched();
-    this.somethingInterestingControl.markAsUntouched();
-    this.revalidateName();
-    this.updateValiditySignals();
+    this.nameControl.reset(plant.name);
+    this.scienceNameControl.reset(plant.scientificName);
+    this.habitatControl.reset(plant.habitat);
+    this.somethingInterestingControl.reset(plant.somethingInteresting);
   }
 
   startCopy(plant: Plant) {
     this.isEditing.set(true);
     this.editingPlant = null;
-    const copiedPlant = {
-      ...plant,
-      name: `${plant.name} (Copy)`,
-      updated: new Date()
-    };
-    this.currentPlant.set(copiedPlant);
-    this.nameControl.setValue(copiedPlant.name);
-    this.scienceNameControl.setValue(copiedPlant.scientificName);
-    this.habitatControl.setValue(copiedPlant.habitat);
-    this.somethingInterestingControl.setValue(copiedPlant.somethingInteresting);
-    // Mark as touched so any errors show immediately
+    this.nameControl.setValue(`${plant.name} (Copy)`);
+    this.scienceNameControl.setValue(plant.scientificName);
+    this.habitatControl.setValue(plant.habitat);
+    this.somethingInterestingControl.setValue(plant.somethingInteresting);
     this.nameControl.markAsTouched();
     this.scienceNameControl.markAsTouched();
     this.habitatControl.markAsTouched();
     this.somethingInterestingControl.markAsTouched();
-    // Force validation update on all controls
-    this.nameControl.updateValueAndValidity();
-    this.scienceNameControl.updateValueAndValidity();
-    this.habitatControl.updateValueAndValidity();
-    this.somethingInterestingControl.updateValueAndValidity();
-    this.updateValiditySignals();
   }
 
   cancelEdit() {
     this.isEditing.set(false);
     this.editingPlant = null;
-    this.nameControl.setValue('');
-    this.scienceNameControl.setValue('');
-    this.habitatControl.setValue('');
-    this.somethingInterestingControl.setValue('');
-    this.nameControl.markAsUntouched();
-    this.scienceNameControl.markAsUntouched();
-    this.habitatControl.markAsUntouched();
-    this.somethingInterestingControl.markAsUntouched();
-    this.updateValiditySignals();
   }
 
   save() {
     if (!this.canSave()) return;
 
-    const plant = this.currentPlant();
+    const plant = {
+      name: this.nameControl.value!,
+      scientificName: this.scienceNameControl.value!,
+      habitat: this.habitatControl.value!,
+      somethingInteresting: this.somethingInterestingControl.value!,
+      updated: new Date()
+    };
 
     if (this.editingPlant) {
       // Update existing
@@ -365,13 +271,6 @@ export class PlantManagerComponent implements OnInit, OnDestroy {
 
   private revalidateName() {
     this.nameControl.updateValueAndValidity();
-  }
-
-  private updateValiditySignals() {
-    this.nameValid.set(this.nameControl.valid);
-    this.scienceNameValid.set(this.scienceNameControl.valid);
-    this.habitatValid.set(this.habitatControl.valid);
-    this.somethingInterestingValid.set(this.somethingInterestingControl.valid);
   }
 
   private showSuccess(message: string) {
