@@ -7,7 +7,7 @@
       <div class="search-controls">
         <mat-form-field class="search-field-select">
           <mat-label>Search in</mat-label>
-          <mat-select [(ngModel)]="searchField" (selectionChange)="onSearch()">
+          <mat-select [(ngModel)]="searchField">
             <mat-option value="name">Name</mat-option>
             <mat-option value="scientificName">Scientific Name</mat-option>
             <mat-option value="habitat">Habitat</mat-option>
@@ -18,7 +18,7 @@
 
         <mat-form-field class="search-field">
           <mat-label>Search plants</mat-label>
-          <input matInput [(ngModel)]="searchTerm" (input)="onSearch()" placeholder="Enter search term...">
+          <input matInput [(ngModel)]="searchTerm" placeholder="Enter search term...">
           @if (searchTerm()) {
             <button matSuffix mat-icon-button (click)="clearSearch()">
               <mat-icon>clear</mat-icon>

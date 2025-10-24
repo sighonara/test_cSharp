@@ -37,14 +37,81 @@ import { Subscription } from 'rxjs';
   styleUrl: './plant-manager.scss'
 })
 export class PlantManagerComponent implements OnInit, OnDestroy {
+  // ---- Constants ---- //
+  readonly dateFormat = 'yyyy/M/d, HH:mm';
+
+  // ---- Public Properties ---- //
+  editingPlant: Plant | null = null;
+
+  // ---- Private Properties ---- //
+  private nameSubscription?: Subscription;
+  private scienceNameSubscription?: Subscription;
+  private habitatSubscription?: Subscription;
+  private somethingInterestingSubscription?: Subscription;
+
+  // ---- Lifecycle ---- //
+  constructor(
+    private plantService: PlantService,
+    private snackBar: MatSnackBar
+  ) {
+    this.nameSubscription = this.nameControl.valueChanges.subscribe(newName => {
+      if (newName !== null) {
+        this.currentPlant.set({
+          ...this.currentPlant(),
+          name: newName
+        });
+      }
+      this.nameValid.set(this.nameControl.valid);
+    });
+    this.scienceNameSubscription = this.scienceNameControl.valueChanges.subscribe(newName => {
+      if (newName !== null) {
+        this.currentPlant.set({
+          ...this.currentPlant(),
+          scientificName: newName
+        });
+      }
+      this.scienceNameValid.set(this.scienceNameControl.valid);
+    });
+    this.habitatSubscription = this.habitatControl.valueChanges.subscribe(newHabitat => {
+      if (newHabitat !== null) {
+        this.currentPlant.set({
+          ...this.currentPlant(),
+          habitat: newHabitat
+        });
+      }
+      this.habitatValid.set(this.habitatControl.valid);
+    });
+    this.somethingInterestingSubscription = this.somethingInterestingControl.valueChanges.subscribe(newSomethingInteresting => {
+      if (newSomethingInteresting !== null) {
+        this.currentPlant.set({
+          ...this.currentPlant(),
+          somethingInteresting: newSomethingInteresting
+        })
+      }
+      this.somethingInterestingValid.set(this.somethingInterestingControl.valid);
+    })
+  }
+
+  ngOnInit() {
+    this.loadPlants();
+  }
+
+  ngOnDestroy() {
+    this.nameSubscription?.unsubscribe();
+    this.scienceNameSubscription?.unsubscribe();
+    this.habitatSubscription?.unsubscribe();
+    this.somethingInterestingSubscription?.unsubscribe();
+  }
+
+  // ---- Signals/Watches ---- //
+
   plants = signal<Plant[]>([]);
-  filteredPlants = signal<Plant[]>([]);
   searchTerm = signal('');
   searchField = signal('name');
-
-  // Form state
   isEditing = signal(false);
-  editingPlant: Plant | null = null;
+  comparisonMode = signal(false);
+  selectedForComparison = signal<Plant[]>([]);
+
   currentPlant = signal<Plant>({
     name: '',
     scientificName: '',
@@ -61,25 +128,51 @@ export class PlantManagerComponent implements OnInit, OnDestroy {
       () => this.editingPlant?.name
     )
   ]);
-  private nameSubscription?: Subscription;
   scienceNameControl = new FormControl('', [Validators.required]);
-  private scienceNameSubscription?: Subscription;
   habitatControl = new FormControl('', [Validators.required]);
-  private habitatSubscription?: Subscription;
   somethingInterestingControl = new FormControl('', [Validators.required]);
-  private somethingInterestingSubscription?: Subscription;
 
-  // Comparison state
-  comparisonMode = signal(false);
-  selectedForComparison = signal<Plant[]>([]);
+  // Signals to track form validity (needed for computed canSave signal)
+  nameValid = signal(false);
+  scienceNameValid = signal(false);
+  habitatValid = signal(false);
+  somethingInterestingValid = signal(false);
+
+  // ---- Computed Signals/Watches ---- //
+  filteredPlants = computed(() => {
+    const term = this.searchTerm().toLowerCase();
+    const field = this.searchField();
+
+    let filtered = this.plants();
+
+    if (term) {
+      filtered = filtered.filter(p => {
+        if (field === 'updated') {
+          const formattedDate = new Date(p.updated).toLocaleString('en-US', {
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
+          }).toLowerCase();
+          return formattedDate.includes(term);
+        }
+        return (p[field as keyof Plant] as string).toLowerCase().includes(term);
+      });
+    }
+
+    // Sort alphabetically by name
+    return filtered.sort((a, b) => a.name.localeCompare(b.name));
+  });
+
   isComparing = computed(() => this.selectedForComparison().length === 2);
 
   canSave = computed(() => {
-    const plant = this.currentPlant();
-    return this.nameControl.valid &&
-      this.scienceNameControl.valid &&
-      this.habitatControl.valid &&
-      this.somethingInterestingControl.valid
+    return this.nameValid() &&
+      this.scienceNameValid() &&
+      this.habitatValid() &&
+      this.somethingInterestingValid();
   });
 
   displayedColumns = computed(() =>
@@ -88,101 +181,20 @@ export class PlantManagerComponent implements OnInit, OnDestroy {
       : ['name', 'scientificName', 'habitat', 'somethingInteresting', 'updated', 'actions']
   );
 
-  readonly dateFormat = 'yyyy/M/d, HH:mm';
-
-  constructor(
-    private plantService: PlantService,
-    private snackBar: MatSnackBar
-  ) {
-    this.nameSubscription = this.nameControl.valueChanges.subscribe(newName => {
-      if (newName !== null) {
-        this.currentPlant.set({
-          ...this.currentPlant(),
-          name: newName
-        });
-      }
-    });
-    this.scienceNameSubscription = this.scienceNameControl.valueChanges.subscribe(newName => {
-      if (newName !== null) {
-        this.currentPlant.set({
-          ...this.currentPlant(),
-          scientificName: newName
-        });
-      }
-    });
-    this.habitatSubscription = this.habitatControl.valueChanges.subscribe(newHabitat => {
-      if (newHabitat !== null) {
-        this.currentPlant.set({
-          ...this.currentPlant(),
-          habitat: newHabitat
-        });
-      }
-    });
-    this.somethingInterestingSubscription = this.somethingInterestingControl.valueChanges.subscribe(newSomethingInteresting => {
-      if (newSomethingInteresting !== null) {
-        this.currentPlant.set({
-          ...this.currentPlant(),
-          somethingInteresting: newSomethingInteresting
-        })
-      }
-    })
-  }
-
-  ngOnInit() {
-    this.loadPlants();
-  }
-
-  ngOnDestroy() {
-    this.nameSubscription?.unsubscribe();
-    this.scienceNameSubscription?.unsubscribe();
-    this.habitatSubscription?.unsubscribe();
-    this.somethingInterestingSubscription?.unsubscribe();
-  }
-
-  // Call this to re-run validation when plants list changes
-  private revalidateName() {
-    this.nameControl.updateValueAndValidity();
-  }
+  // ---- Public Methods ---- //
 
   loadPlants() {
     this.plantService.getPlants().subscribe({
       next: (data) => {
         this.plants.set(data);
-        this.filteredPlants.set(data);
         this.revalidateName();
       },
       error: (err) => this.showError('Failed to load plants')
     });
   }
 
-  onSearch() {
-    const term = this.searchTerm().toLowerCase();
-    if (!term) {
-      this.filteredPlants.set(this.plants());
-      return;
-    }
-
-    const field = this.searchField();
-    const filtered = this.plants().filter(p => {
-      if (field === 'updated') {
-        const formattedDate = new Date(p.updated).toLocaleString('en-US', {
-          year: 'numeric',
-          month: 'numeric',
-          day: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: false
-        }).toLowerCase();
-        return formattedDate.includes(term);
-      }
-      return (p[field as keyof Plant] as string).toLowerCase().includes(term);
-    });
-    this.filteredPlants.set(filtered);
-  }
-
   clearSearch() {
     this.searchTerm.set('');
-    this.filteredPlants.set(this.plants());
   }
 
   toggleComparisonMode() {
@@ -211,6 +223,7 @@ export class PlantManagerComponent implements OnInit, OnDestroy {
     this.scienceNameControl.markAsUntouched();
     this.habitatControl.markAsUntouched();
     this.somethingInterestingControl.markAsUntouched();
+    this.updateValiditySignals();
   }
 
   startEdit(plant: Plant) {
@@ -226,6 +239,7 @@ export class PlantManagerComponent implements OnInit, OnDestroy {
     this.habitatControl.markAsUntouched();
     this.somethingInterestingControl.markAsUntouched();
     this.revalidateName();
+    this.updateValiditySignals();
   }
 
   startCopy(plant: Plant) {
@@ -246,7 +260,12 @@ export class PlantManagerComponent implements OnInit, OnDestroy {
     this.scienceNameControl.markAsTouched();
     this.habitatControl.markAsTouched();
     this.somethingInterestingControl.markAsTouched();
-    this.revalidateName();
+    // Force validation update on all controls
+    this.nameControl.updateValueAndValidity();
+    this.scienceNameControl.updateValueAndValidity();
+    this.habitatControl.updateValueAndValidity();
+    this.somethingInterestingControl.updateValueAndValidity();
+    this.updateValiditySignals();
   }
 
   cancelEdit() {
@@ -260,6 +279,7 @@ export class PlantManagerComponent implements OnInit, OnDestroy {
     this.scienceNameControl.markAsUntouched();
     this.habitatControl.markAsUntouched();
     this.somethingInterestingControl.markAsUntouched();
+    this.updateValiditySignals();
   }
 
   save() {
@@ -339,6 +359,19 @@ export class PlantManagerComponent implements OnInit, OnDestroy {
     } else {
       return 'comparison-different';
     }
+  }
+
+  // ---- Private Methods ---- //
+
+  private revalidateName() {
+    this.nameControl.updateValueAndValidity();
+  }
+
+  private updateValiditySignals() {
+    this.nameValid.set(this.nameControl.valid);
+    this.scienceNameValid.set(this.scienceNameControl.valid);
+    this.habitatValid.set(this.habitatControl.valid);
+    this.somethingInterestingValid.set(this.somethingInterestingControl.valid);
   }
 
   private showSuccess(message: string) {

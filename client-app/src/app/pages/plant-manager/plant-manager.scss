@@ -11,7 +11,7 @@
     position: sticky;
     top: 0;
     z-index: 100;
-    background-color: white;
+    background-color: var(--color-bg-white);
   }
 
   .search-card {
@@ -47,7 +47,7 @@
       gap: 0.5rem;
       margin-top: 1rem;
       padding-top: 1rem;
-      border-top: 1px solid #e0e0e0;
+      border-top: 1px solid var(--color-border-light);
       color: #1976d2;
 
       mat-icon {
@@ -88,31 +88,43 @@
     table {
       width: 100%;
 
+      tr.mat-mdc-row:nth-child(odd) {
+        background-color: var(--color-table-row-odd);
+      }
+
+      tr.mat-mdc-row:nth-child(even) {
+        background-color: var(--color-table-row-even);
+      }
+
+      tr.mat-mdc-row:hover {
+        background-color: var(--color-table-row-hover);
+      }
+
       .compare-icon {
         font-size: 20px;
-        color: #666;
+        color: var(--color-text-secondary);
       }
 
       .comparison-same {
-        background-color: #c8e6c9 !important;
-        border-left: 3px solid #4caf50;
+        background-color: var(--color-comparison-same-bg) !important;
+        border-left: 3px solid var(--color-comparison-same-border);
       }
 
       .comparison-different {
-        background-color: #fff3cd !important;
-        border-left: 3px solid #ff9800;
+        background-color: var(--color-comparison-different-bg) !important;
+        border-left: 3px solid var(--color-comparison-different-border);
       }
 
       .comparison-row-selected {
-        background-color: #f5f5f5;
-        border-left: 4px solid #2196f3;
+        background-color: var(--color-comparison-selected-bg);
+        border-left: 4px solid var(--color-comparison-selected-border);
       }
     }
 
     .no-results {
       padding: 2rem;
       text-align: center;
-      color: #666;
+      color: var(--color-text-secondary);
     }
   }
 }

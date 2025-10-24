@@ -1,0 +1,37 @@
+// Application-wide color variables
+// Uses Material Design 3 system variables where appropriate
+:root {
+  // Status colors (custom - app-specific)
+  --color-status-pass: #4caf50;
+  --color-status-warn: #ff9800;
+  --color-status-fail: var(--mat-sys-error);
+
+  // Background colors
+  --color-bg-pass: #f1f8f4;  // Custom for pass status
+  --color-bg-warn: #fff8f0;  // Custom for warn status
+  --color-bg-fail: var(--mat-sys-error-container);
+
+  // Neutral colors (Material system variables)
+  --color-bg-white: var(--mat-sys-surface);
+  --color-bg-gray-lightest: var(--mat-sys-surface-container-lowest);
+  --color-bg-gray-light: var(--mat-sys-surface-container-low);
+  --color-bg-hover: rgba(0, 0, 0, 0.02);
+
+  --color-border-light: var(--mat-sys-outline-variant);
+
+  --color-text-primary: var(--mat-sys-on-surface);
+  --color-text-secondary: var(--mat-sys-on-surface-variant);
+
+  // Plant-themed alternating row colors
+  --color-table-row-odd: var(--color-bg-gray-light);
+  --color-table-row-even: var(--color-bg-white);
+  --color-table-row-hover: var(--mat-sys-surface-container);
+
+  // Comparison colors (custom - app-specific)
+  --color-comparison-same-bg: #c8e6c9;
+  --color-comparison-same-border: #4caf50;
+  --color-comparison-different-bg: #fff3cd;
+  --color-comparison-different-border: #ff9800;
+  --color-comparison-selected-bg: var(--color-bg-gray-light);
+  --color-comparison-selected-border: var(--mat-sys-primary);
+}
