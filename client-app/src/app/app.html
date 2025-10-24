@@ -3,13 +3,13 @@
     <mat-icon>{{ navExpanded() ? 'chevron_left' : 'chevron_right' }}</mat-icon>
   </button>
   <div class="nav-content">
-    <button mat-button (click)="navigateTo('plants')" [class.active]="isActive('plants')">
-      <mat-icon>eco</mat-icon>
-      <span>Plants</span>
-    </button>
     <button mat-button (click)="navigateTo('status-dashboard')" [class.active]="isActive('status-dashboard')">
       <mat-icon>dashboard</mat-icon>
       <span>Status</span>
+    </button>
+    <button mat-button (click)="navigateTo('plants')" [class.active]="isActive('plants')">
+      <mat-icon>eco</mat-icon>
+      <span>Plants</span>
     </button>
   </div>
 </div>

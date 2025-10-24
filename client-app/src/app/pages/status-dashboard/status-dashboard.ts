@@ -1,11 +1,14 @@
-import { Component, signal } from '@angular/core';
+import {Component, OnDestroy, OnInit, signal} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
+import { PlantService } from '../../services/plant.service';
+import { Observable } from 'rxjs';
 
 export type StatusValue = 'pass' | 'warn' | 'fail';
 
+// ---- Interface Definitions ---- //
 export interface StatusCheck {
   name: string;
   status: StatusValue;
@@ -17,13 +20,70 @@ export interface StatusSection {
   items: StatusCheck[];
 }
 
+export interface HealthCheckConfig {
+  sectionTitle: string;
+  itemName: string;
+  checkFn: () => Observable<any>;
+  passThresholdMs?: number;  // Default 100ms
+  warnThresholdMs?: number;  // Default 500ms
+  updateResponseTimeItem?: string;  // Optional: also update another item with response time
+}
+
+// ---- Component Definition ---- //
+
 @Component({
   selector: 'app-status-dashboard',
   imports: [CommonModule, MatCardModule, MatIconModule, MatDividerModule],
   templateUrl: './status-dashboard.html',
   styleUrl: './status-dashboard.scss',
 })
-export class StatusDashboard {
+export class StatusDashboard implements OnInit, OnDestroy {
+  // ---- Private Properties ---- //
+  private healthCheckInterval?: number;
+
+  // ---- Lifecycle ---- //
+  constructor(private plantService: PlantService) {}
+
+  ngOnInit() {
+    // Configure health checks
+    const healthChecks: HealthCheckConfig[] = [
+      {
+        sectionTitle: 'API Health',
+        itemName: 'Plants Endpoint',
+        checkFn: () => this.plantService.getPlants(),
+        passThresholdMs: 100,
+        warnThresholdMs: 500,
+        updateResponseTimeItem: 'API Response Time'
+      },
+      // Add more health checks here as needed
+      // Example:
+      // {
+      //   sectionTitle: 'API Health',
+      //   itemName: 'Health Check',
+      //   checkFn: () => this.http.get('/api/health'),
+      //   passThresholdMs: 50,
+      //   warnThresholdMs: 200
+      // }
+    ];
+
+    // Run all health checks immediately
+    healthChecks.forEach(config => this.performHealthCheck(config));
+
+    // Set up interval for periodic checks
+    this.healthCheckInterval = window.setInterval(() => {
+      healthChecks.forEach(config => this.performHealthCheck(config));
+    }, 10000);
+  }
+
+  ngOnDestroy() {
+    // Clean up interval when component is destroyed
+    if (this.healthCheckInterval) {
+      clearInterval(this.healthCheckInterval);
+    }
+  }
+
+  // ---- Signals ---- //
+
   statusSections = signal<StatusSection[]>([
     {
       title: 'Test Values (Static)',
@@ -40,8 +100,6 @@ export class StatusDashboard {
         // pass: 200 response, warn: 200-500ms response time, fail: timeout/error
         { name: 'C# API Server', status: 'pass', description: 'Main backend server health' },
 
-        // TODO: Test GET /api/plants with actual HTTP call
-        // pass: 200 response, warn: 200 with slow response, fail: 4xx/5xx
         { name: 'Plants Endpoint', status: 'pass', description: 'GET /api/plants' },
 
         // TODO: Test POST/PUT/DELETE operations
@@ -143,6 +201,8 @@ export class StatusDashboard {
     }
   ]);
 
+  // ---- Public Methods ---- //
+
   getStatusIcon(status: StatusValue): string {
     switch (status) {
       case 'pass': return 'check_circle';
@@ -153,5 +213,81 @@ export class StatusDashboard {
 
   getStatusClass(status: StatusValue): string {
     return `status-${status}`;
+  }
+
+  // ---- Private Methods ---- //
+
+  private performHealthCheck(config: HealthCheckConfig) {
+    const startTime = Date.now();
+    const passThreshold = config.passThresholdMs ?? 100;
+    const warnThreshold = config.warnThresholdMs ?? 500;
+
+    config.checkFn().subscribe({
+      next: () => {
+        const responseTime = Date.now() - startTime;
+
+        // Update the main item status
+        this.updateStatus(config.sectionTitle, config.itemName, {
+          status: 'pass',
+          description: `${config.itemName} (${responseTime}ms)`
+        });
+
+        // Optionally update response time item if specified
+        if (config.updateResponseTimeItem) {
+          let status: StatusValue;
+          let description: string;
+
+          if (responseTime < passThreshold) {
+            status = 'pass';
+            description = `Response time ${responseTime}ms`;
+          } else if (responseTime < warnThreshold) {
+            status = 'warn';
+            description = `Response time ${responseTime}ms (slow)`;
+          } else {
+            status = 'fail';
+            description = `Response time ${responseTime}ms (critical)`;
+          }
+
+          this.updateStatus(config.sectionTitle, config.updateResponseTimeItem, {
+            status,
+            description
+          });
+        }
+      },
+      error: (err) => {
+        // Update main item to fail
+        this.updateStatus(config.sectionTitle, config.itemName, {
+          status: 'fail',
+          description: `${config.itemName} failed: ${err.status || 'Network error'}`
+        });
+
+        // Also mark response time item as fail if specified
+        if (config.updateResponseTimeItem) {
+          this.updateStatus(config.sectionTitle, config.updateResponseTimeItem, {
+            status: 'fail',
+            description: 'Unable to measure - endpoint unreachable'
+          });
+        }
+      }
+    });
+  }
+
+  private updateStatus(sectionTitle: string, itemName: string, updates: Partial<StatusCheck>) {
+    this.statusSections.update(sections => {
+      return sections.map(section => {
+        if (section.title === sectionTitle) {
+          return {
+            ...section,
+            items: section.items.map(item => {
+              if (item.name === itemName) {
+                return { ...item, ...updates };
+              }
+              return item;
+            })
+          };
+        }
+        return section;
+      });
+    });
   }
 }
