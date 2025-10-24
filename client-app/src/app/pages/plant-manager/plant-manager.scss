@@ -7,13 +7,15 @@
     margin-bottom: 1.5rem;
   }
 
-  .search-card {
+  .sticky-header {
     position: sticky;
     top: 0;
     z-index: 100;
-    padding: 1rem;
-    margin-bottom: 1.5rem;
     background-color: white;
+  }
+
+  .search-card {
+    padding: 1rem;
 
     .search-controls {
       display: flex;
@@ -61,12 +63,7 @@
   }
 
   .form-card {
-    position: sticky;
-    top: 109px;
-    z-index: 99;
     padding: 1.5rem;
-    margin-bottom: 1.5rem;
-    background-color: white;
 
     h2 {
       margin-bottom: 1rem;

@@ -1,107 +1,109 @@
 <div class="plant-manager">
   <h1>🌱 Plant Manager</h1>
 
-  <!-- Search Bar -->
-  <mat-card class="search-card">
-    <div class="search-controls">
-      <mat-form-field class="search-field-select">
-        <mat-label>Search in</mat-label>
-        <mat-select [(ngModel)]="searchField" (selectionChange)="onSearch()">
-          <mat-option value="name">Name</mat-option>
-          <mat-option value="scientificName">Scientific Name</mat-option>
-          <mat-option value="habitat">Habitat</mat-option>
-          <mat-option value="somethingInteresting">Interesting Fact</mat-option>
-          <mat-option value="updated">Updated</mat-option>
-        </mat-select>
-      </mat-form-field>
+  <div class="sticky-header">
+    <!-- Search Bar -->
+    <mat-card class="search-card">
+      <div class="search-controls">
+        <mat-form-field class="search-field-select">
+          <mat-label>Search in</mat-label>
+          <mat-select [(ngModel)]="searchField" (selectionChange)="onSearch()">
+            <mat-option value="name">Name</mat-option>
+            <mat-option value="scientificName">Scientific Name</mat-option>
+            <mat-option value="habitat">Habitat</mat-option>
+            <mat-option value="somethingInteresting">Interesting Fact</mat-option>
+            <mat-option value="updated">Updated</mat-option>
+          </mat-select>
+        </mat-form-field>
 
-      <mat-form-field class="search-field">
-        <mat-label>Search plants</mat-label>
-        <input matInput [(ngModel)]="searchTerm" (input)="onSearch()" placeholder="Enter search term...">
-        @if (searchTerm()) {
-          <button matSuffix mat-icon-button (click)="clearSearch()">
-            <mat-icon>clear</mat-icon>
-          </button>
-        }
-      </mat-form-field>
+        <mat-form-field class="search-field">
+          <mat-label>Search plants</mat-label>
+          <input matInput [(ngModel)]="searchTerm" (input)="onSearch()" placeholder="Enter search term...">
+          @if (searchTerm()) {
+            <button matSuffix mat-icon-button (click)="clearSearch()">
+              <mat-icon>clear</mat-icon>
+            </button>
+          }
+        </mat-form-field>
 
-      <button mat-raised-button color="primary" (click)="startCreate()" [disabled]="isEditing() || comparisonMode()">
-        <mat-icon>add</mat-icon> Add Plant
-      </button>
-
-      <mat-slide-toggle
-        (change)="toggleComparisonMode()"
-        [disabled]="isEditing()"
-        color="accent">
-        <mat-icon>compare</mat-icon> Compare Mode
-      </mat-slide-toggle>
-    </div>
-
-    @if (comparisonMode()) {
-      <div class="comparison-info">
-        <mat-icon>info</mat-icon>
-        @if (selectedForComparison().length === 0) {
-          <span>Select plants from the table below to compare</span>
-        } @else if (selectedForComparison().length === 1) {
-          <span>{{ selectedForComparison().length }} selected - select one more to compare</span>
-        } @else {
-          <span>{{ selectedForComparison().length }} selected - highlighted fields show differences</span>
-        }
-        @if (selectedForComparison().length > 0) {
-          <button mat-button (click)="clearComparison()">Clear Selection</button>
-        }
-      </div>
-    }
-  </mat-card>
-
-  <!-- Edit/Create Form -->
-  @if (isEditing()) {
-    <mat-card class="form-card">
-      <h2>{{ editingPlant ? 'Edit Plant' : 'Create New Plant' }}</h2>
-
-      <mat-form-field>
-        <mat-label>Name</mat-label>
-        <input matInput [formControl]="nameControl" required>
-        @if (nameControl.hasError('required')) {
-          <mat-error>Name is required</mat-error>
-        }
-        @if (nameControl.hasError('nameExists')) {
-          <mat-error>A plant with this name already exists</mat-error>
-        }
-      </mat-form-field>
-
-      <mat-form-field>
-        <mat-label>Scientific Name</mat-label>
-        <input matInput [formControl]="scienceNameControl" required>
-        @if (scienceNameControl.hasError('required')) {
-          <mat-error>Scientific Name is required</mat-error>
-        }
-      </mat-form-field>
-
-      <mat-form-field>
-        <mat-label>Habitat</mat-label>
-        <input matInput [formControl]="habitatControl" required>
-        @if (habitatControl.hasError('required')) {
-          <mat-error>Habitat is required</mat-error>
-        }
-      </mat-form-field>
-
-      <mat-form-field>
-        <mat-label>Something Interesting</mat-label>
-        <textarea matInput [formControl]="somethingInterestingControl" rows="3" required></textarea>
-        @if (somethingInterestingControl.hasError('required')) {
-          <mat-error>Something interesting is required</mat-error>
-        }
-      </mat-form-field>
-
-      <div class="form-actions">
-        <button mat-raised-button (click)="cancelEdit()">Cancel</button>
-        <button mat-raised-button color="primary" (click)="save()" [disabled]="!canSave()">
-          {{ editingPlant ? 'Update' : 'Create' }}
+        <button mat-raised-button color="primary" (click)="startCreate()" [disabled]="isEditing() || comparisonMode()">
+          <mat-icon>add</mat-icon> Add Plant
         </button>
+
+        <mat-slide-toggle
+          (change)="toggleComparisonMode()"
+          [disabled]="isEditing()"
+          color="accent">
+          <mat-icon>compare</mat-icon> Compare Mode
+        </mat-slide-toggle>
       </div>
+
+      @if (comparisonMode()) {
+        <div class="comparison-info">
+          <mat-icon>info</mat-icon>
+          @if (selectedForComparison().length === 0) {
+            <span>Select plants from the table below to compare</span>
+          } @else if (selectedForComparison().length === 1) {
+            <span>{{ selectedForComparison().length }} selected - select one more to compare</span>
+          } @else {
+            <span>{{ selectedForComparison().length }} selected - highlighted fields show differences</span>
+          }
+          @if (selectedForComparison().length > 0) {
+            <button mat-button (click)="clearComparison()">Clear Selection</button>
+          }
+        </div>
+      }
     </mat-card>
-  }
+
+    <!-- Edit/Create Form -->
+    @if (isEditing()) {
+      <mat-card class="form-card">
+        <h2>{{ editingPlant ? 'Edit Plant' : 'Create New Plant' }}</h2>
+
+        <mat-form-field>
+          <mat-label>Name</mat-label>
+          <input matInput [formControl]="nameControl" required>
+          @if (nameControl.hasError('required')) {
+            <mat-error>Name is required</mat-error>
+          }
+          @if (nameControl.hasError('nameExists')) {
+            <mat-error>A plant with this name already exists</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Scientific Name</mat-label>
+          <input matInput [formControl]="scienceNameControl" required>
+          @if (scienceNameControl.hasError('required')) {
+            <mat-error>Scientific Name is required</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Habitat</mat-label>
+          <input matInput [formControl]="habitatControl" required>
+          @if (habitatControl.hasError('required')) {
+            <mat-error>Habitat is required</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Something Interesting</mat-label>
+          <textarea matInput [formControl]="somethingInterestingControl" rows="3" required></textarea>
+          @if (somethingInterestingControl.hasError('required')) {
+            <mat-error>Something interesting is required</mat-error>
+          }
+        </mat-form-field>
+
+        <div class="form-actions">
+          <button mat-raised-button (click)="cancelEdit()">Cancel</button>
+          <button mat-raised-button color="primary" (click)="save()" [disabled]="!canSave()">
+            {{ editingPlant ? 'Update' : 'Create' }}
+          </button>
+        </div>
+      </mat-card>
+    }
+  </div>
 
   <!-- Plants Table -->
   <mat-card class="table-card">
