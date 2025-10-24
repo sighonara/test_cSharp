@@ -31,9 +31,6 @@ export class App {
   }
 
   toggleNav() {
-    console.info('Toggle nav', this.navExpanded()
-      ? 'true'
-      : 'false');
     this.navExpanded.set(!this.navExpanded());
   }
 }
