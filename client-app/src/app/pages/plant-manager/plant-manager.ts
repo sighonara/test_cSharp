@@ -53,7 +53,7 @@ export class PlantManagerComponent implements OnInit, OnDestroy {
     updated: new Date()
   });
 
-  // Form control for name with custom validator
+  // Form control validators. Needed for better UI of validation errors.
   nameControl = new FormControl('', [
     Validators.required,
     uniqueNameValidator(
@@ -62,6 +62,12 @@ export class PlantManagerComponent implements OnInit, OnDestroy {
     )
   ]);
   private nameSubscription?: Subscription;
+  scienceNameControl = new FormControl('', [Validators.required]);
+  private scienceNameSubscription?: Subscription;
+  habitatControl = new FormControl('', [Validators.required]);
+  private habitatSubscription?: Subscription;
+  somethingInterestingControl = new FormControl('', [Validators.required]);
+  private somethingInterestingSubscription?: Subscription;
 
   // Comparison state
   comparisonMode = signal(false);
@@ -71,9 +77,9 @@ export class PlantManagerComponent implements OnInit, OnDestroy {
   canSave = computed(() => {
     const plant = this.currentPlant();
     return this.nameControl.valid &&
-      plant.scientificName.trim() !== '' &&
-      plant.habitat.trim() !== '' &&
-      plant.somethingInteresting.trim() !== '';
+      this.scienceNameControl.valid &&
+      this.habitatControl.valid &&
+      this.somethingInterestingControl.valid
   });
 
   displayedColumns = computed(() =>
@@ -88,7 +94,6 @@ export class PlantManagerComponent implements OnInit, OnDestroy {
     private plantService: PlantService,
     private snackBar: MatSnackBar
   ) {
-    // Subscribe to name changes
     this.nameSubscription = this.nameControl.valueChanges.subscribe(newName => {
       if (newName !== null) {
         this.currentPlant.set({
@@ -97,6 +102,30 @@ export class PlantManagerComponent implements OnInit, OnDestroy {
         });
       }
     });
+    this.scienceNameSubscription = this.scienceNameControl.valueChanges.subscribe(newName => {
+      if (newName !== null) {
+        this.currentPlant.set({
+          ...this.currentPlant(),
+          scientificName: newName
+        });
+      }
+    });
+    this.habitatSubscription = this.habitatControl.valueChanges.subscribe(newHabitat => {
+      if (newHabitat !== null) {
+        this.currentPlant.set({
+          ...this.currentPlant(),
+          habitat: newHabitat
+        });
+      }
+    });
+    this.somethingInterestingSubscription = this.somethingInterestingControl.valueChanges.subscribe(newSomethingInteresting => {
+      if (newSomethingInteresting !== null) {
+        this.currentPlant.set({
+          ...this.currentPlant(),
+          somethingInteresting: newSomethingInteresting
+        })
+      }
+    })
   }
 
   ngOnInit() {
@@ -105,6 +134,9 @@ export class PlantManagerComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.nameSubscription?.unsubscribe();
+    this.scienceNameSubscription?.unsubscribe();
+    this.habitatSubscription?.unsubscribe();
+    this.somethingInterestingSubscription?.unsubscribe();
   }
 
   // Call this to re-run validation when plants list changes
@@ -172,7 +204,13 @@ export class PlantManagerComponent implements OnInit, OnDestroy {
     };
     this.currentPlant.set(newPlant);
     this.nameControl.setValue('');
+    this.scienceNameControl.setValue('');
+    this.habitatControl.setValue('');
+    this.somethingInterestingControl.setValue('');
     this.nameControl.markAsUntouched();
+    this.scienceNameControl.markAsUntouched();
+    this.habitatControl.markAsUntouched();
+    this.somethingInterestingControl.markAsUntouched();
   }
 
   startEdit(plant: Plant) {
@@ -180,7 +218,13 @@ export class PlantManagerComponent implements OnInit, OnDestroy {
     this.editingPlant = plant;
     this.currentPlant.set({ ...plant });
     this.nameControl.setValue(plant.name);
+    this.scienceNameControl.setValue(plant.scientificName);
+    this.habitatControl.setValue(plant.habitat);
+    this.somethingInterestingControl.setValue(plant.somethingInteresting);
     this.nameControl.markAsUntouched();
+    this.scienceNameControl.markAsUntouched();
+    this.habitatControl.markAsUntouched();
+    this.somethingInterestingControl.markAsUntouched();
     this.revalidateName();
   }
 
@@ -194,7 +238,14 @@ export class PlantManagerComponent implements OnInit, OnDestroy {
     };
     this.currentPlant.set(copiedPlant);
     this.nameControl.setValue(copiedPlant.name);
-    this.nameControl.markAsTouched(); // Mark as touched so error shows immediately
+    this.scienceNameControl.setValue(copiedPlant.scientificName);
+    this.habitatControl.setValue(copiedPlant.habitat);
+    this.somethingInterestingControl.setValue(copiedPlant.somethingInteresting);
+    // Mark as touched so any errors show immediately
+    this.nameControl.markAsTouched();
+    this.scienceNameControl.markAsTouched();
+    this.habitatControl.markAsTouched();
+    this.somethingInterestingControl.markAsTouched();
     this.revalidateName();
   }
 
@@ -202,7 +253,13 @@ export class PlantManagerComponent implements OnInit, OnDestroy {
     this.isEditing.set(false);
     this.editingPlant = null;
     this.nameControl.setValue('');
+    this.scienceNameControl.setValue('');
+    this.habitatControl.setValue('');
+    this.somethingInterestingControl.setValue('');
     this.nameControl.markAsUntouched();
+    this.scienceNameControl.markAsUntouched();
+    this.habitatControl.markAsUntouched();
+    this.somethingInterestingControl.markAsUntouched();
   }
 
   save() {

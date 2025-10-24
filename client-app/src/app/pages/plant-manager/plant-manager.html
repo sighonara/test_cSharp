@@ -36,23 +36,23 @@
         <mat-icon>compare</mat-icon> Compare Mode
       </mat-slide-toggle>
     </div>
-  </mat-card>
 
-  <!-- Comparison Banner -->
-  @if (comparisonMode() && selectedForComparison().length > 0) {
-    <mat-card class="comparison-banner">
+    @if (comparisonMode()) {
       <div class="comparison-info">
         <mat-icon>info</mat-icon>
-        <span>{{ selectedForComparison().length }} selected for comparison</span>
-        @if (selectedForComparison().length < 2) {
-          <span class="hint">(Select one more to compare in the table below)</span>
+        @if (selectedForComparison().length === 0) {
+          <span>Select plants from the table below to compare</span>
+        } @else if (selectedForComparison().length === 1) {
+          <span>{{ selectedForComparison().length }} selected - select one more to compare</span>
         } @else {
-          <span class="hint">✓ Comparison active - highlighted fields show differences</span>
+          <span>{{ selectedForComparison().length }} selected - highlighted fields show differences</span>
+        }
+        @if (selectedForComparison().length > 0) {
+          <button mat-button (click)="clearComparison()">Clear Selection</button>
         }
       </div>
-      <button mat-button (click)="clearComparison()">Clear Selection</button>
-    </mat-card>
-  }
+    }
+  </mat-card>
 
   <!-- Edit/Create Form -->
   @if (isEditing()) {
@@ -72,17 +72,26 @@
 
       <mat-form-field>
         <mat-label>Scientific Name</mat-label>
-        <input matInput [(ngModel)]="currentPlant().scientificName" required>
+        <input matInput [formControl]="scienceNameControl" required>
+        @if (scienceNameControl.hasError('required')) {
+          <mat-error>Scientific Name is required</mat-error>
+        }
       </mat-form-field>
 
       <mat-form-field>
         <mat-label>Habitat</mat-label>
-        <input matInput [(ngModel)]="currentPlant().habitat" required>
+        <input matInput [formControl]="habitatControl" required>
+        @if (habitatControl.hasError('required')) {
+          <mat-error>Habitat is required</mat-error>
+        }
       </mat-form-field>
 
       <mat-form-field>
         <mat-label>Something Interesting</mat-label>
-        <textarea matInput [(ngModel)]="currentPlant().somethingInteresting" rows="3" required></textarea>
+        <textarea matInput [formControl]="somethingInterestingControl" rows="3" required></textarea>
+        @if (somethingInterestingControl.hasError('required')) {
+          <mat-error>Something interesting is required</mat-error>
+        }
       </mat-form-field>
 
       <div class="form-actions">
