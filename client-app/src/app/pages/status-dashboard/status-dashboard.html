@@ -1,0 +1,28 @@
+<div class="status-dashboard">
+  <h1>📊 System Status</h1>
+  <p class="subtitle">At-a-glance view of all system health checks</p>
+
+  <div class="status-sections">
+    @for (section of statusSections(); track section.title) {
+      <div class="status-section">
+        <h2 class="section-title">{{ section.title }}</h2>
+        <div class="status-list">
+          @for (status of section.items; track status.name; let isLast = $last) {
+            <div class="status-item" [class]="getStatusClass(status.status)">
+              <div class="status-icon">
+                <mat-icon>{{ getStatusIcon(status.status) }}</mat-icon>
+              </div>
+              <div class="status-content">
+                <div class="status-name">{{ status.name }}</div>
+                <div class="status-description">{{ status.description }}</div>
+              </div>
+            </div>
+            @if (!isLast) {
+              <mat-divider />
+            }
+          }
+        </div>
+      </div>
+    }
+  </div>
+</div>

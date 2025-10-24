@@ -1,13 +1,39 @@
 import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { MatToolbar } from '@angular/material/toolbar';
+import { Router, RouterOutlet } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, MatToolbar],
+  imports: [
+    CommonModule,
+    RouterOutlet,
+    MatToolbarModule,
+    MatButtonModule,
+    MatIconModule
+  ],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
 export class App {
-  protected readonly title = signal('client-app');
+  navExpanded = signal(true);
+
+  constructor(private router: Router) {}
+
+  navigateTo(page: string) {
+    this.router.navigate([page]);
+  }
+
+  isActive(page: string): boolean {
+    return this.router.url === `/${page}`;
+  }
+
+  toggleNav() {
+    console.info('Toggle nav', this.navExpanded()
+      ? 'true'
+      : 'false');
+    this.navExpanded.set(!this.navExpanded());
+  }
 }

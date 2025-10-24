@@ -1,0 +1,94 @@
+.status-dashboard {
+  padding: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+
+  h1 {
+    margin-bottom: 0.5rem;
+  }
+
+  .subtitle {
+    color: #666;
+    margin-bottom: 2rem;
+    font-size: 1rem;
+  }
+
+  .status-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+
+    .status-section {
+      .section-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 0 0 1rem 0;
+        color: #333;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #e0e0e0;
+      }
+
+      .status-list {
+        background-color: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        overflow: hidden;
+
+        .status-item {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          padding: 1rem 1.5rem;
+          transition: background-color 0.2s ease;
+
+          &:hover {
+            background-color: rgba(0, 0, 0, 0.02);
+          }
+
+          .status-icon {
+            flex-shrink: 0;
+
+            mat-icon {
+              font-size: 24px;
+              width: 24px;
+              height: 24px;
+            }
+          }
+
+          .status-content {
+            flex: 1;
+            min-width: 0;
+
+            .status-name {
+              font-size: 0.95rem;
+              font-weight: 500;
+              margin-bottom: 0.25rem;
+              color: #333;
+            }
+
+            .status-description {
+              font-size: 0.85rem;
+              color: #666;
+            }
+          }
+
+          &.status-pass .status-icon mat-icon {
+            color: #4caf50;
+          }
+
+          &.status-warn .status-icon mat-icon {
+            color: #ff9800;
+          }
+
+          &.status-fail .status-icon mat-icon {
+            color: #f44336;
+          }
+        }
+
+        mat-divider {
+          margin: 0 1.5rem;
+        }
+      }
+    }
+  }
+}
