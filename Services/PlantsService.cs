@@ -10,7 +10,7 @@ public class PlantService {
     private readonly ILogger<PlantService> _logger;
     private const string FilePath = "plants.json";
     private Dictionary<string, Plant> _plants { get; set; }
-    public IEnumerable<Plant> Plants => _plants.Values;
+    public virtual IEnumerable<Plant> Plants => _plants.Values;
     private readonly JsonSerializerOptions _options = new() { WriteIndented = true };
 
     public PlantService(ILogger<PlantService> logger) {
@@ -19,7 +19,7 @@ public class PlantService {
         LoadPlants();
     }
 
-    private void LoadPlants() {
+    protected virtual void LoadPlants() {
         try {
             if (!File.Exists(FilePath)) {
                 throw new FileNotFoundException("File not found");
@@ -48,46 +48,46 @@ public class PlantService {
         }
     }
 
-    private void SavePlants() {
+    protected virtual void SavePlants() {
         var plantList = _plants.Values.ToList();
         var json = JsonSerializer.Serialize(plantList, _options);
         File.WriteAllText(FilePath, json);
     }
 
-    public Plant? GetPlant(string name) {
+    public virtual Plant? GetPlant(string name) {
         return _plants.GetValueOrDefault(name);
     }
-    
-    public void CreatePlant(Plant plant) {
+
+    public virtual void CreatePlant(Plant plant) {
         if (_plants.ContainsKey(plant.Name)) {
             throw new InvalidOperationException($"Plant with name '{plant.Name}' already exists.");
         }
-        
+
         _plants[plant.Name] = plant;
         SavePlants();
     }
-    
-    public void UpdatePlant(string originalName, Plant plant) {
+
+    public virtual void UpdatePlant(string originalName, Plant plant) {
         if (!_plants.ContainsKey(originalName)) {
             throw new KeyNotFoundException($"Plant '{originalName}' not found.");
         }
-        
+
         // If the name is changing, check for duplicates
         if (originalName != plant.Name && _plants.ContainsKey(plant.Name)) {
             throw new InvalidOperationException($"Plant with name '{plant.Name}' already exists.");
         }
-        
+
         // Remove old entry if name changed
         if (originalName != plant.Name) {
             _plants.Remove(originalName);
         }
-        
+
         plant.Updated = DateTime.Now;
         _plants[plant.Name] = plant;
         SavePlants();
     }
-    
-    public bool DeletePlant(string name) {
+
+    public virtual bool DeletePlant(string name) {
         var wasDeleted = _plants.Remove(name);
         if (wasDeleted) {
             SavePlants();

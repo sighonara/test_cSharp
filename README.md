@@ -51,11 +51,39 @@ ng build  # Output in dist/ directory
 - **State Management**: Angular signals with reactive forms
 - **Styling**: CSS variables leveraging Material Design system tokens
 
+## Testing
+
+### Frontend Tests
+The Angular application includes unit tests for services using Jasmine and Karma.
+
+```bash
+cd client-app
+
+# Run tests interactively (opens browser, watches for changes)
+ng test
+
+# Run tests once in headless mode (CI/CD)
+ng test --watch=false --browsers=ChromeHeadless
+```
+
+**Current Coverage:**
+- `PlantService`: All CRUD operations (GET, POST, PUT, DELETE) with HTTP mocking
+- `App`: Component creation, navigation elements, router outlet
+
+### Backend Tests
+Backend unit tests implemented with xUnit and Moq.
+
+```bash
+cd test_cSharp.Tests && dotnet test
+```
+
+**Current Coverage:**
+- `PlantService`: CRUD operations, duplicate handling, case-insensitive lookups, renaming
+- `PlantsController`: HTTP response codes, validation, error handling
+
 ## Future Improvements
 
 ### Testing & Quality Assurance
-- **Unit Tests**: Component logic, service methods, validators
-- **Integration Tests**: End-to-end API workflows, frontend-backend integration
 - **E2E Tests**: Full user journey testing with tools like Playwright or Cypress
 
 ### Data Persistence & Synchronization
