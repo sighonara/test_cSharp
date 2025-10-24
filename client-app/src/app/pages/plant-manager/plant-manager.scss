@@ -8,14 +8,51 @@
   }
 
   .search-card {
-    display: flex;
-    gap: 1rem;
-    align-items: center;
     padding: 1rem;
     margin-bottom: 1.5rem;
 
-    .search-field {
-      flex: 1;
+    .search-controls {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+
+      .search-field-select {
+        width: 180px;
+      }
+
+      .search-field {
+        flex: 1;
+      }
+
+      button, mat-slide-toggle {
+        flex-shrink: 0;
+      }
+
+      mat-slide-toggle {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+    }
+  }
+
+  .comparison-banner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    background-color: #e3f2fd;
+
+    .comparison-info {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      .hint {
+        color: #666;
+        font-style: italic;
+      }
     }
   }
 
@@ -45,6 +82,26 @@
 
     table {
       width: 100%;
+
+      .compare-icon {
+        font-size: 20px;
+        color: #666;
+      }
+
+      .comparison-same {
+        background-color: #c8e6c9 !important;
+        border-left: 3px solid #4caf50;
+      }
+
+      .comparison-different {
+        background-color: #fff3cd !important;
+        border-left: 3px solid #ff9800;
+      }
+
+      .comparison-row-selected {
+        background-color: #f5f5f5;
+        border-left: 4px solid #2196f3;
+      }
     }
 
     .no-results {

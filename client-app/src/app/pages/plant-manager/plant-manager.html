@@ -3,28 +3,68 @@
 
   <!-- Search Bar -->
   <mat-card class="search-card">
-    <mat-form-field class="search-field">
-      <mat-label>Search plants</mat-label>
-      <input matInput [(ngModel)]="searchTerm" (input)="onSearch()" placeholder="Search by any field...">
-      @if (searchTerm()) {
-        <button matSuffix mat-icon-button (click)="clearSearch()">
-          <mat-icon>clear</mat-icon>
-        </button>
-      }
-    </mat-form-field>
-    <button mat-raised-button color="primary" (click)="startCreate()" disabled="{{ isEditing() }}">
-      <mat-icon>add</mat-icon> Add Plant
-    </button>
+    <div class="search-controls">
+      <mat-form-field class="search-field-select">
+        <mat-label>Search in</mat-label>
+        <mat-select [(ngModel)]="searchField" (selectionChange)="onSearch()">
+          <mat-option value="name">Name</mat-option>
+          <mat-option value="scientificName">Scientific Name</mat-option>
+          <mat-option value="habitat">Habitat</mat-option>
+          <mat-option value="somethingInteresting">Interesting Fact</mat-option>
+          <mat-option value="updated">Updated</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field class="search-field">
+        <mat-label>Search plants</mat-label>
+        <input matInput [(ngModel)]="searchTerm" (input)="onSearch()" placeholder="Enter search term...">
+        @if (searchTerm()) {
+          <button matSuffix mat-icon-button (click)="clearSearch()">
+            <mat-icon>clear</mat-icon>
+          </button>
+        }
+      </mat-form-field>
+
+      <button mat-raised-button color="primary" (click)="startCreate()" [disabled]="isEditing() || comparisonMode()">
+        <mat-icon>add</mat-icon> Add Plant
+      </button>
+
+      <mat-slide-toggle
+        (change)="toggleComparisonMode()"
+        [disabled]="isEditing()"
+        color="accent">
+        <mat-icon>compare</mat-icon> Compare Mode
+      </mat-slide-toggle>
+    </div>
   </mat-card>
+
+  <!-- Comparison Banner -->
+  @if (comparisonMode() && selectedForComparison().length > 0) {
+    <mat-card class="comparison-banner">
+      <div class="comparison-info">
+        <mat-icon>info</mat-icon>
+        <span>{{ selectedForComparison().length }} selected for comparison</span>
+        @if (selectedForComparison().length < 2) {
+          <span class="hint">(Select one more to compare in the table below)</span>
+        } @else {
+          <span class="hint">✓ Comparison active - highlighted fields show differences</span>
+        }
+      </div>
+      <button mat-button (click)="clearComparison()">Clear Selection</button>
+    </mat-card>
+  }
 
   <!-- Edit/Create Form -->
   @if (isEditing()) {
     <mat-card class="form-card">
       <h2>{{ editingPlant ? 'Edit Plant' : 'Create New Plant' }}</h2>
 
-      <mat-form-field>
+      <mat-form-field [class.mat-form-field-invalid]="nameExists()">
         <mat-label>Name</mat-label>
-        <input matInput [(ngModel)]="currentPlant().name" required>
+        <input matInput [ngModel]="currentPlant().name" required (ngModelChange)="updatePlantName($event)">
+        @if (nameExists()) {
+          <mat-error>A plant with this name already exists</mat-error>
+        }
       </mat-form-field>
 
       <mat-form-field>
@@ -44,7 +84,7 @@
 
       <div class="form-actions">
         <button mat-raised-button (click)="cancelEdit()">Cancel</button>
-        <button mat-raised-button color="primary" (click)="save()">
+        <button mat-raised-button color="primary" (click)="save()" [disabled]="!canSave()">
           {{ editingPlant ? 'Update' : 'Create' }}
         </button>
       </div>
@@ -55,6 +95,22 @@
   <mat-card class="table-card">
     <table mat-table [dataSource]="filteredPlants()">
 
+      @if (comparisonMode()) {
+        <ng-container matColumnDef="select">
+          <th mat-header-cell *matHeaderCellDef>
+            <mat-icon class="compare-icon">compare_arrows</mat-icon>
+          </th>
+          <td mat-cell *matCellDef="let plant">
+            <mat-checkbox
+              [checked]="isSelected(plant)"
+              [disabled]="!isSelected(plant) && selectedForComparison().length >= 2"
+              (change)="toggleComparison(plant, $event.checked)"
+              color="accent">
+            </mat-checkbox>
+          </td>
+        </ng-container>
+      }
+
       <ng-container matColumnDef="name">
         <th mat-header-cell *matHeaderCellDef>Name</th>
         <td mat-cell *matCellDef="let plant">{{ plant.name }}</td>
@@ -62,41 +118,48 @@
 
       <ng-container matColumnDef="scientificName">
         <th mat-header-cell *matHeaderCellDef>Scientific Name</th>
-        <td mat-cell *matCellDef="let plant">{{ plant.scientificName }}</td>
+        <td mat-cell *matCellDef="let plant" [class]="getComparisonClass(plant, 'scientificName')">
+          {{ plant.scientificName }}
+        </td>
       </ng-container>
 
       <ng-container matColumnDef="habitat">
         <th mat-header-cell *matHeaderCellDef>Habitat</th>
-        <td mat-cell *matCellDef="let plant">{{ plant.habitat }}</td>
+        <td mat-cell *matCellDef="let plant" [class]="getComparisonClass(plant, 'habitat')">
+          {{ plant.habitat }}
+        </td>
       </ng-container>
 
       <ng-container matColumnDef="somethingInteresting">
         <th mat-header-cell *matHeaderCellDef>Interesting Fact</th>
-        <td mat-cell *matCellDef="let plant">{{ plant.somethingInteresting }}</td>
+        <td mat-cell *matCellDef="let plant" [class]="getComparisonClass(plant, 'somethingInteresting')">
+          {{ plant.somethingInteresting }}
+        </td>
       </ng-container>
 
       <ng-container matColumnDef="updated">
         <th mat-header-cell *matHeaderCellDef>Updated</th>
-        <td mat-cell *matCellDef="let plant">{{ plant.updated | date }}</td>
+        <td mat-cell *matCellDef="let plant">{{ plant.updated | date:dateFormat }}</td>
       </ng-container>
 
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef>Actions</th>
         <td mat-cell *matCellDef="let plant">
-          <button mat-icon-button (click)="startEdit(plant)" matTooltip="Edit">
+          <button mat-icon-button (click)="startEdit(plant)" matTooltip="Edit" [disabled]="isEditing() || comparisonMode()">
             <mat-icon>edit</mat-icon>
           </button>
-          <button mat-icon-button (click)="startCopy(plant)" matTooltip="Copy">
+          <button mat-icon-button (click)="startCopy(plant)" matTooltip="Copy" [disabled]="isEditing() || comparisonMode()">
             <mat-icon>content_copy</mat-icon>
           </button>
-          <button mat-icon-button color="warn" (click)="delete(plant)" matTooltip="Delete">
+          <button mat-icon-button color="warn" (click)="delete(plant)" matTooltip="Delete" [disabled]="isEditing() || comparisonMode()">
             <mat-icon>delete</mat-icon>
           </button>
         </td>
       </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns()"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns();"
+          [class.comparison-row-selected]="comparisonMode() && isSelected(row)"></tr>
     </table>
 
     @if (filteredPlants().length === 0) {
