@@ -17,7 +17,7 @@ Full-stack plant CRUD application demonstrating ASP.NET Core Web API with Angula
 ### Backend (from repository root)
 ```bash
 dotnet restore
-dotnet run
+dotnet run (default accessible outside the localhost machine)
 ```
 
 API available at http://localhost:5155/[endpoint]
@@ -27,7 +27,7 @@ Swagger UI available at http://localhost:5155/swagger/index.html
 ```bash
 cd client-app
 npm install
-ng serve
+ng serve (ng serve ----host 0.0.0.0 to make it accessible from outside the localhost machine)
 ```
 
 App available at http://localhost:4200/
