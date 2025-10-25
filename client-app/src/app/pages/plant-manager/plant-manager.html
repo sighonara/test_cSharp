@@ -2,7 +2,6 @@
   <h1>🌱 Plant Manager</h1>
 
   <div class="sticky-header">
-    <!-- Search Bar -->
     <mat-card class="search-card">
       <div class="search-controls">
         <mat-form-field class="search-field-select">
@@ -105,7 +104,13 @@
     }
   </div>
 
-  <!-- Plants Table -->
+  <!-- Table -->
+  <!-- FUTURE: Add pagination (and overcome hurdles with comparison when we do) -->
+  <!-- FUTURE: Column sorting -->
+  <!-- FUTURE: Update the search to span all columns with just the one search term. One search to rule them all. -->
+  <!-- FUTURE: Undo/Redo. Does this make sense? Research before implementing. -->
+  <!-- FUTURE: Bulk operations (delete, copy, etc.) -->
+
   <mat-card class="table-card">
     <table mat-table [dataSource]="filteredPlants()">
 

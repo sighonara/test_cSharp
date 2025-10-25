@@ -36,11 +36,13 @@ import { toSignal } from '@angular/core/rxjs-interop';
   templateUrl: './plant-manager.html',
   styleUrl: './plant-manager.scss'
 })
-// FUTURE: Add pagination support for large plant collections (and overcome hurdles with comparison when we do.
+// FUTURE: Add pagination support for large plant collections (and overcome hurdles with comparison when we do).
 // FUTURE: Add bulk operations (multi-select delete, bulk edit)
 // FUTURE: Add export/import functionality (CSV/JSON)
 // FUTURE: Add undo/redo support with action history
 // FUTURE: Implement offline support with service workers (PWA)
+// FUTURE: Column sorting
+// FUTURE: Add localization (almost certainly won't directly happen in this file)
 export class PlantManagerComponent implements OnInit {
   // ---- Constants ---- //
   readonly dateFormat = 'yyyy/M/d, HH:mm';

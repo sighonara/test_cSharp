@@ -111,6 +111,11 @@ cd test_cSharp.Tests && dotnet test
 - **Bulk Operations**: Multi-select delete, bulk edit capabilities
 - **Export/Import**: CSV/JSON data export and import functionality
 - **Offline Support**: Progressive Web App (PWA) with service workers
+- **Column Sorting**: Add sorting by column
+- **Responsive Design**: Ensure phones can still use the site
+- **Dark Mode**: Dark theme support
+- **Accessibility**: Compliance with the most recent standards
+- **Localization**: Internationalization support (very low priority)
 
 ### Performance & Scalability
 - **Caching Strategy**: Redis or in-memory caching for frequently accessed data
