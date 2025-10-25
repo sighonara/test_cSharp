@@ -29,6 +29,7 @@ Full-stack plant CRUD application demonstrating ASP.NET Core Web API with Angula
 8. `cd <project root>\client-app; npm install` or `cd <project root>\client-app && npm install` (depending on what kind of command line window is being used). This will install any necessary dependencies for the frontend application.
 9. `npx ng serve`. This will start the frontend application.
 10. Open a browser and navigate to `http://localhost:4200/` to view the application.
+11. Optional: The swagger endpoint is available at `http://localhost:5155/swagger/index.html`.
 
 ---
 
