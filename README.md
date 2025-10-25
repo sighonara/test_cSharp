@@ -2,6 +2,36 @@
 
 Full-stack plant CRUD application demonstrating ASP.NET Core Web API with Angular 20 frontend.
 
+---
+## Instillation Instructions for Oct 27th, 2025 (Windows).
+(This was tested on Windows 11 Pro)
+
+1. Bring up the Command Prompt. By default, it will start in your user directory.
+2. Install prerequisites. These can be done anywhere, so if we do these steps in the user directory, that's fine.
+   1. git: `winget install --id Git.Git -e --source winget`
+      1. This installed git 2.51.1 when I tested this on a fresh Windows 11 Pro install.
+      2. The version I developed with was 2.50.1, but this shouldn't matter.
+   2. .NET SDK 8.x `winget install Microsoft.DotNet.SDK.8`
+      1. .NET 9 is probably fine, but I haven't tested it
+      2. This installed .NET 8.0.415 for when I tested this on a fresh Windows 11 Pro install.
+      3. The version I developed against was 8.0.100, but this shouldn't matter.
+   3. Node.js 20.x or greater `winget install OpenJS.NodeJS`
+      1. This installed Node.js 25.0.0 when I tested this on a fresh Windows 11 Pro install.
+      2. The version I developed against was 22.21.0, but this shouldn't matter.
+3. Choose where you want to clone the project. Navigate to that directory.
+4. `Git clone https://github.com/sighonara/test_cSharp.git`
+   1. This will create a new directory called `test_cSharp` in the current directory. This new directory will be referred to as `<project root>` from now on.
+5. Optional: If you happen to be in PowerShell, you'll need to set permissions appropriately to run the remaining scripts. That can be done with:  `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned`
+6. `cd <project root>; dotnet run` or `cd <project root> && dotnet run`. This will install any necessary dependencies and start the backend application.
+7. The previous command will occupy the Command Prompt window. To continue, you will need a new window. This can be done by either:
+   1. Pressing the Windows key and typing "cmd" and choosing "Command Prompt" from the list.
+   2. Clicking on the "+" on the top of the Command Prompt window. This will create a new tab. Every time I do this, the new tab is a PowerShell window. ⚠️**NOTE**⚠️ If you end up with a PowerShell window, you'll need to run the command at item #5 to run the rest of the commands. 
+8. `cd <project root>\client-app; npm install` or `cd <project root>\client-app && npm install` (depending on what kind of command line window is being used). This will install any necessary dependencies for the frontend application.
+9. `npx ng serve`. This will start the frontend application.
+10. Open a browser and navigate to `http://localhost:4200/` to view the application.
+
+---
+
 ## Features
 - **System Status Dashboard**: 37 real-time health checks including API endpoints, external services, browser capabilities, and system info
 - **Plant Manager**: Full CRUD operations with search, comparison mode, and alphabetical sorting
