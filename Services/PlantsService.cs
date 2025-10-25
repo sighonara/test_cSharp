@@ -3,9 +3,9 @@ using test_cSharp.Models;
 
 namespace test_cSharp.Services;
 
-// FUTURE: Replace in-memory JSON storage with database (SQL Server, PostgreSQL, or NoSQL like MongoDB)
-// FUTURE: Implement optimistic concurrency control with ETags or row versioning
-// Far FUTURE: Add caching layer (Redis/IMemoryCache) for frequently accessed plant data
+// TODO: (#2) Replace in-memory JSON storage with database (SQL Server, PostgreSQL, or NoSQL like MongoDB)
+// TODO: (#4) Implement optimistic concurrency control with ETags or row versioning
+// TODO: (#25) Add caching layer (Redis/IMemoryCache) for frequently accessed plant data
 public class PlantService {
     private readonly ILogger<PlantService> _logger;
     private const string FilePath = "plants.json";

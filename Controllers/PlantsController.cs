@@ -4,10 +4,10 @@ using test_cSharp.Services;
 
 namespace test_cSharp.Controllers;
 
-// FUTURE: Add authentication/authorization with JWT tokens or cookie-based auth
-// FUTURE: Implement rate limiting to prevent API abuse
-// FUTURE: Add pagination support for GET /plants endpoint
-// FUTURE: Add API versioning (e.g., /v1/plants) for backward compatibility
+// TODO: (#6) Add authentication/authorization with JWT tokens or cookie-based auth
+// TODO: (#9) Implement rate limiting to prevent API abuse
+// TODO: (#35) Add pagination support for GET /plants endpoint
+// TODO: (#26) Add API versioning (e.g., /v1/plants) for backward compatibility
 [ApiController]
 [Route("[controller]")]
 public class PlantsController(PlantService plantsService, ILogger<PlantsController> logger) : ControllerBase {
@@ -41,7 +41,7 @@ public class PlantsController(PlantService plantsService, ILogger<PlantsControll
     /// </summary>
     /// <param name="plant">The plant object to create</param>
     /// <returns>201 Created with the new plant, or 409 Conflict if name already exists</returns>
-    // FUTURE: Add input validation/sanitization for XSS prevention
+    // TODO: (#7) Add input validation/sanitization for XSS prevention
     [HttpPost(Name = "PostPlant")]
     public ActionResult<Plant> Post([FromBody] Plant plant) {
         try {

@@ -114,49 +114,52 @@ cd test_cSharp.Tests && dotnet test
 ## Future Improvements
 
 ### Testing & Quality Assurance
-- **E2E Tests**: Full user journey testing with tools like Playwright or Cypress
+- **E2E Tests**: Full user journey testing with tools like Playwright or Cypress [#1](https://github.com/sighonara/test_cSharp/issues/1)
 
 ### Data Persistence & Synchronization
-- **Database Integration**: Replace in-memory JSON storage with SQL/NoSQL database
-- **Real-time Synchronization**: WebSocket support for multi-user concurrent editing
-- **Optimistic Concurrency Control**: Handle simultaneous updates with versioning/ETags
-- **Data Validation**: Server-side validation beyond basic existence checks
+- **Database Integration**: Replace in-memory JSON storage with SQL/NoSQL database [#2](https://github.com/sighonara/test_cSharp/issues/2)
+- **Real-time Synchronization**: WebSocket support for multi-user concurrent editing [#3](https://github.com/sighonara/test_cSharp/issues/3)
+- **Optimistic Concurrency Control**: Handle simultaneous updates with versioning/ETags [#4](https://github.com/sighonara/test_cSharp/issues/4)
+- **Data Validation**: Server-side and database validation beyond basic existence checks [#5](https://github.com/sighonara/test_cSharp/issues/5)
 
 ### Security & Authentication
-- **Authentication & Authorization**: User login, role-based access control (RBAC)
-- **Input Sanitization**: XSS prevention, SQL injection protection
-- **CORS Configuration**: Environment-specific CORS policies (not just localhost)
-- **Rate Limiting**: API throttling to prevent abuse
+- **Authentication & Authorization**: User login, role-based access control (RBAC) [#6](https://github.com/sighonara/test_cSharp/issues/6)
+- **Input Sanitization**: XSS prevention, SQL injection protection [#7](https://github.com/sighonara/test_cSharp/issues/7)
+- **CORS Configuration**: Environment-specific CORS policies (not just localhost) [#8](https://github.com/sighonara/test_cSharp/issues/8)
+- **Rate Limiting**: API throttling to prevent abuse [#9](https://github.com/sighonara/test_cSharp/issues/9)
+- **HTTPS**: Get HTTPS working [#37](https://github.com/sighonara/test_cSharp/issues/37)
 
 ### Observability & Monitoring
-- **Structured Logging**: Serilog or similar with contextual information
-- **Application Performance Monitoring**: Integration with Application Insights or similar
-- **Error Tracking**: Centralized error logging and alerting
-- **Health Check Endpoints**: Standard `/health` and `/ready` endpoints for orchestrators
+- **Structured Logging**: Serilog or similar with contextual information [#10](https://github.com/sighonara/test_cSharp/issues/10)
+- **Application Performance Monitoring**: Integration with Application Insights or similar [#11](https://github.com/sighonara/test_cSharp/issues/11)
+- **Error Tracking**: Centralized error logging and alerting [#12](https://github.com/sighonara/test_cSharp/issues/12)
+- **Health Check Endpoints**: Standard `/health` and `/ready` endpoints for orchestrators [#13](https://github.com/sighonara/test_cSharp/issues/13)
 
 ### User Experience Enhancements
-- **Pagination**: Handle large datasets efficiently
-- **Advanced Filtering**: Multi-field search, date ranges, custom filters
-- **Undo/Redo**: Action history for user operations
-- **Bulk Operations**: Multi-select delete, bulk edit capabilities
-- **Export/Import**: CSV/JSON data export and import functionality
-- **Offline Support**: Progressive Web App (PWA) with service workers
-- **Column Sorting**: Add sorting by column
-- **Responsive Design**: Ensure phones can still use the site
-- **Dark Mode**: Dark theme support
-- **Accessibility**: Compliance with the most recent standards
-- **Localization**: Internationalization support (very low priority)
+- **Pagination**: Prevent an endless scroll of data [#14](https://github.com/sighonara/test_cSharp/issues/14)
+- **Advanced Filtering**: Multi-field search, date ranges, custom filters [#15](https://github.com/sighonara/test_cSharp/issues/15)
+- **Undo/Redo**: Action history for user operations [#16](https://github.com/sighonara/test_cSharp/issues/16)
+- **Bulk Operations**: Multi-select delete, bulk edit capabilities [#17](https://github.com/sighonara/test_cSharp/issues/17)
+- **Export/Import**: CSV/JSON data export and import functionality [#18](https://github.com/sighonara/test_cSharp/issues/18)
+- **Offline Support**: Progressive Web App (PWA) with service workers [#19](https://github.com/sighonara/test_cSharp/issues/19)
+- **Column Sorting**: Add sorting by column [#20](https://github.com/sighonara/test_cSharp/issues/20)
+- **Responsive Design**: Ensure phones can still use the site [#21](https://github.com/sighonara/test_cSharp/issues/21)
+- **Dark Mode**: Dark theme support [#22](https://github.com/sighonara/test_cSharp/issues/22)
+- **Accessibility**: Compliance with the most recent standards [#23](https://github.com/sighonara/test_cSharp/issues/23)
+- **Localization**: Internationalization support (very low priority) [#24](https://github.com/sighonara/test_cSharp/issues/24)
+- **24-Hour Time**: Find and implement a real solution [#38](https://github.com/sighonara/test_cSharp/issues/38)
 
 ### Performance & Scalability
-- **Caching Strategy**: Redis or in-memory caching for frequently accessed data
-- **API Versioning**: Backward compatibility for API evolution
-- **CDN Integration**: Static asset delivery optimization
-- **Lazy Loading**: On-demand module loading in Angular
-- **Connection Pooling**: Efficient database connection management
+- **Caching Strategy**: Redis or in-memory caching for frequently accessed data [#25](https://github.com/sighonara/test_cSharp/issues/25)
+- **API Versioning**: Backward compatibility for API evolution [#26](https://github.com/sighonara/test_cSharp/issues/26)
+- **CDN Integration**: Static asset delivery optimization [#27](https://github.com/sighonara/test_cSharp/issues/27)
+- **Lazy Loading**: On-demand module loading in Angular [#28](https://github.com/sighonara/test_cSharp/issues/28)
+- **Connection Pooling**: Efficient database connection management [#29](https://github.com/sighonara/test_cSharp/issues/29)
+- **DB Entity Pagination**: Efficient database query optimization [#35](https://github.com/sighonara/test_cSharp/issues/35)
 
 ### DevOps & Deployment
-- **CI/CD Pipeline**: Automated build, test, and deployment
-- **Containerization**: Docker images for consistent deployment
-- **Cloud Deployment**: Azure App Service, AWS, or GCP deployment guides
-- **Environment Configuration**: Dev/Staging/Prod configuration management
-- **Infrastructure as Code**: Terraform or ARM templates
+- **CI/CD Pipeline**: Automated build, test, and deployment [#30](https://github.com/sighonara/test_cSharp/issues/30)
+- **Containerization**: Docker images for consistent deployment [#31](https://github.com/sighonara/test_cSharp/issues/31)
+- **Cloud Deployment**: Azure App Service deployment [#32](https://github.com/sighonara/test_cSharp/issues/32)
+- **Environment Configuration**: Staging/Prod configuration management [#33](https://github.com/sighonara/test_cSharp/issues/33)
+- **Infrastructure as Code**: Terraform or ARM templates [#34](https://github.com/sighonara/test_cSharp/issues/34)

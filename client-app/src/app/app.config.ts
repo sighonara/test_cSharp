@@ -12,7 +12,7 @@ export const appConfig: ApplicationConfig = {
     {
       // Setting the default date format to include 24-hour time. Civilized.
       // With a more complicated app, I would have to do something more sophisticated.
-      // NOTE FOR FUTURE ME: Do something more scalable.
+      // TODO: (#38) Do something more scalable.
       provide: DATE_PIPE_DEFAULT_OPTIONS,
       useValue: { dateFormat: 'yyyy/M/d, HH:mm' }
     }

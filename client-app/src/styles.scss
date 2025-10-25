@@ -6,9 +6,9 @@
 @use '@angular/material' as mat;
 @use 'variables';
 
-// FUTURE: Responsive Design
-// FUTURE: Dark Mode
-// FUTURE: Accessibility
+// TODO: (#21) Responsive Design
+// TODO: (#22) Dark Mode
+// TODO: (#23) Accessibility
 
 html {
   @include mat.theme((

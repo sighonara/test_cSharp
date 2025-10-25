@@ -198,7 +198,7 @@ export class StatusDashboard implements OnInit, OnDestroy {
   // This function performs a simple HTTP request and updates the status accordingly
   // Pass/Warn/Fail thresholds can be configured per-check
   // Also, the response time item can be updated with the response time
-  // FUTURE: Add support for WebSockets and other types of health checks (e.g., database connection, custom API)
+  // TODO: (#2, #3?, #5?) Add support for WebSockets and other types of health checks (e.g., database connection, custom API)
   private performHealthCheck(config: HealthCheckConfig) {
     const startTime = Date.now();
     const passThreshold = config.passThresholdMs ?? 100;

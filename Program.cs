@@ -1,8 +1,8 @@
 using test_cSharp.Services;
 
-// FUTURE: Add structured logging with Serilog, or similar
-// FUTURE: Add health check endpoints (/health, /ready) for Kubernetes/orchestrators
-// Far FUTURE: Add Application Insights or similar APM tool for monitoring
+// TODO: (#10) Add structured logging with Serilog, or similar
+// TODO: (#13) Add health check endpoints (/health, /ready) for Kubernetes/orchestrators
+// TODO: (#11, #32) Add Application Insights or similar APM tool for monitoring
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSingleton<PlantService>();
 
@@ -20,7 +20,7 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 // Add CORS Policy. Needed to allow Angular App to access the API.
-// FUTURE: Configure environment-specific CORS policies (dev/staging/prod)
+// TODO: (#8) Configure environment-specific CORS policies (dev/staging/prod)
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngularApp",
@@ -41,7 +41,7 @@ if (app.Environment.IsDevelopment()) {
     app.UseSwaggerUI();
 }
 
-// app.UseHttpsRedirection(); // FUTURE: Enable HTTPS
+// app.UseHttpsRedirection(); // TODO: (#37) Enable HTTPS
 
 // Use CORS (must be before UseAuthorization)
 app.UseCors("AllowAngularApp");
