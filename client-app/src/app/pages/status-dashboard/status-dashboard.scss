@@ -1,5 +1,5 @@
 .status-dashboard {
-  padding: 2rem;
+  padding: 0 2rem 2rem 2rem;
   max-width: 1000px;
   margin: 0 auto;
 
@@ -11,6 +11,50 @@
     color: var(--color-text-secondary);
     margin-bottom: 2rem;
     font-size: 1rem;
+  }
+
+  .status-pass .status-icon mat-icon {
+    color: var(--color-status-pass);
+  }
+
+  .status-warn .status-icon mat-icon {
+    color: var(--color-status-warn);
+  }
+
+  .status-fail .status-icon mat-icon {
+    color: var(--color-status-fail);
+  }
+
+  .status-name {
+    font-size: 0.95rem;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+    color: var(--color-text-primary);
+  }
+
+  .sticky-status {
+
+    width: fit-content;
+    position: fixed;
+    top: 2em;
+    right: 2em;
+    z-index: 100;
+    background-color: var(--color-bg-white);
+
+    mat-card {
+      width: fit-content;
+    }
+
+    .status-card {
+      background-color: var(--color-bg-white);
+
+      .status-item {
+        padding: 16px 24px;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+    }
   }
 
   .status-sections {
@@ -59,29 +103,10 @@
             flex: 1;
             min-width: 0;
 
-            .status-name {
-              font-size: 0.95rem;
-              font-weight: 500;
-              margin-bottom: 0.25rem;
-              color: var(--color-text-primary);
-            }
-
             .status-description {
               font-size: 0.85rem;
               color: var(--color-text-secondary);
             }
-          }
-
-          &.status-pass .status-icon mat-icon {
-            color: var(--color-status-pass);
-          }
-
-          &.status-warn .status-icon mat-icon {
-            color: var(--color-status-warn);
-          }
-
-          &.status-fail .status-icon mat-icon {
-            color: var(--color-status-fail);
           }
         }
 

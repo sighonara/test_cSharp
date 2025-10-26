@@ -1,4 +1,36 @@
 <div class="status-dashboard">
+
+  <div class="sticky-status">
+    <mat-card class="status-card">
+      <div class="status-item" [class]="getStatusClass(StatusValue.Fail)">
+        <div class="status-icon">
+          <mat-icon>{{ getStatusIcon(StatusValue.Fail) }}</mat-icon>
+        </div>
+        <div class="status-name">
+          {{ failTotal() || "Measuring..." }}
+        </div>
+      </div>
+      <mat-divider />
+      <div class="status-item" [class]="getStatusClass(StatusValue.Warn)">
+        <div class="status-icon">
+          <mat-icon>{{ getStatusIcon(StatusValue.Warn) }}</mat-icon>
+        </div>
+        <div class="status-name">
+          {{ warnTotal() || "Measuring..." }}
+        </div>
+      </div>
+      <mat-divider />
+      <div class="status-item" [class]="getStatusClass(StatusValue.Pass)">
+        <div class="status-icon">
+          <mat-icon>{{ getStatusIcon(StatusValue.Pass) }}</mat-icon>
+        </div>
+        <div class="status-name">
+          {{ passTotal() || "Measuring..." }}
+        </div>
+      </div>
+    </mat-card>
+  </div>
+
   <h1>📊 System Status</h1>
   <p class="subtitle">At-a-glance view of all status items</p>
 

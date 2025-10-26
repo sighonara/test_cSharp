@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit, signal, inject} from '@angular/core';
+import {Component, OnDestroy, OnInit, signal, inject, computed} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -48,6 +48,7 @@ export class StatusDashboard implements OnInit, OnDestroy {
   private memoryCheckInterval?: number;
   private http = inject(HttpClient);
   private resizeListener?: () => void;
+  public StatusValue = StatusValue; // Just here so the template can access the enum
 
   // ---- Lifecycle ---- //
   constructor(private plantService: PlantService) {}
@@ -133,6 +134,18 @@ export class StatusDashboard implements OnInit, OnDestroy {
   }
 
   // ---- Signals/Watches ---- //
+
+  passTotal = computed(() => {
+    return "Total: " + this.statusSections().flatMap(section => section.items).filter(item => item.status === StatusValue.Pass).length;
+  })
+
+  warnTotal = computed(() => {
+    return "Total: " + this.statusSections().flatMap(section => section.items).filter(item => item.status === StatusValue.Warn).length;
+  })
+
+  failTotal = computed(() => {
+    return "Total: " + this.statusSections().flatMap(section => section.items).filter(item => item.status === StatusValue.Fail).length;
+  })
 
   statusSections = signal<StatusSection[]>([
     {

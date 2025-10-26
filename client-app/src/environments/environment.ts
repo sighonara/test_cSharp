@@ -1,4 +1,5 @@
 export const environment = {
   production: false,
-  apiBaseUrl: 'http://localhost:5155'
+  // Use window.location.hostname so it works from any machine (localhost or IP)
+  apiBaseUrl: `http://${typeof window !== 'undefined' ? window.location.hostname : 'localhost'}:5155`
 };
