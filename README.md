@@ -22,7 +22,7 @@ Full-stack plant CRUD application demonstrating ASP.NET Core Web API with Angula
 4. `Git clone https://github.com/sighonara/test_cSharp.git`
    1. This will create a new directory called `test_cSharp` in the current directory. This new directory will be referred to as `<project root>` from now on.
 5. ⚠️ **If using PowerShell** ⚠️: You'll need to set permissions appropriately to run the remaining scripts. That can be done with:  `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned`
-6. `cd <project root>; dotnet run` or `cd <project root> && dotnet run`. This will install any necessary dependencies and start the backend application.
+6. `cd <project root>; dotnet run` (PowerShell < version 7) or `cd <project root> && dotnet run` (Command Prompt or PowerShell version >= 7). This will install any necessary dependencies and start the backend application.
 7. The previous command will occupy the Command Prompt window. To continue, you will need a new window. This can be done by either:
    1. Pressing the Windows key and typing "cmd" and choosing "Command Prompt" from the list.
    2. Clicking on the "+" on the top of the Command Prompt window. This will create a new tab. Every time I do this, the new tab is a PowerShell window. ⚠️**NOTE**⚠️ If you end up with a PowerShell window, you'll need to run the command at item #5 to run the rest of the commands. 
