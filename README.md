@@ -21,15 +21,18 @@ Full-stack plant CRUD application demonstrating ASP.NET Core Web API with Angula
 3. Choose where you want to clone the project. Navigate to that directory.
 4. `Git clone https://github.com/sighonara/test_cSharp.git`
    1. This will create a new directory called `test_cSharp` in the current directory. This new directory will be referred to as `<project root>` from now on.
-5. Optional: If you happen to be in PowerShell, you'll need to set permissions appropriately to run the remaining scripts. That can be done with:  `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned`
+5. ⚠️ **If using PowerShell** ⚠️: You'll need to set permissions appropriately to run the remaining scripts. That can be done with:  `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned`
 6. `cd <project root>; dotnet run` or `cd <project root> && dotnet run`. This will install any necessary dependencies and start the backend application.
 7. The previous command will occupy the Command Prompt window. To continue, you will need a new window. This can be done by either:
    1. Pressing the Windows key and typing "cmd" and choosing "Command Prompt" from the list.
    2. Clicking on the "+" on the top of the Command Prompt window. This will create a new tab. Every time I do this, the new tab is a PowerShell window. ⚠️**NOTE**⚠️ If you end up with a PowerShell window, you'll need to run the command at item #5 to run the rest of the commands. 
-8. `cd <project root>\client-app; npm install` or `cd <project root>\client-app && npm install` (depending on what kind of command line window is being used). This will install any necessary dependencies for the frontend application.
+8. `cd <project root>\client-app; npm install` (PowerShell < version 7) or `cd <project root>\client-app && npm install` (Command Prompt or PowerShell version >= 7) (depending on what kind of command line window is being used). This will install any necessary dependencies for the frontend application.
 9. `npx ng serve`. This will start the frontend application.
 10. Open a browser and navigate to `http://localhost:4200/` to view the application.
 11. Optional: The swagger endpoint is available at `http://localhost:5155/swagger/index.html`.
+12. Optional: The application can also be accessed from a remote machine. To do this, you'll need to modify the following:
+    1. Instead of `npx ng serve` (item #9), run `npx ng serve --host 0.0.0.0`
+    2. You'll need to get the IP address of the machine running the application. Navigate to `http://<ip address>:4200/` in the remote browser.
 
 ---
 
