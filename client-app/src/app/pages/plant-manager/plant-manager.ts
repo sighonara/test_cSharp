@@ -80,7 +80,6 @@ export class PlantManagerComponent implements OnInit {
   habitatControl = new FormControl('', [Validators.required]);
   somethingInterestingControl = new FormControl('', [Validators.required]);
 
-  // This bridges Angular's reactive forms with signals for computed reactivity
   // TODO: (#36) Make sure the Angular app is fully reactive (rather than both reactive and using templates)
   nameStatus = toSignal(this.nameControl.statusChanges, { initialValue: 'INVALID' });
   scienceNameStatus = toSignal(this.scienceNameControl.statusChanges, { initialValue: 'INVALID' });
@@ -112,7 +111,6 @@ export class PlantManagerComponent implements OnInit {
       });
     }
 
-    // Sort alphabetically by name
     return filtered.sort((a, b) => a.name.localeCompare(b.name));
   });
 
@@ -202,7 +200,6 @@ export class PlantManagerComponent implements OnInit {
     };
 
     if (this.editingPlant) {
-      // Update existing
       this.plantService.updatePlant(this.editingPlant.name, plant).subscribe({
         next: () => {
           this.showSuccess('Plant updated successfully');
@@ -212,7 +209,6 @@ export class PlantManagerComponent implements OnInit {
         error: (err) => this.showError(err.error || 'Failed to update plant')
       });
     } else {
-      // Create new
       this.plantService.createPlant(plant).subscribe({
         next: () => {
           this.showSuccess('Plant created successfully');

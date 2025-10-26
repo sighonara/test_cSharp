@@ -157,6 +157,7 @@ cd test_cSharp.Tests && dotnet test
 - **Lazy Loading**: On-demand module loading in Angular [#28](https://github.com/sighonara/test_cSharp/issues/28)
 - **Connection Pooling**: Efficient database connection management [#29](https://github.com/sighonara/test_cSharp/issues/29)
 - **DB Entity Pagination**: Efficient database query optimization [#35](https://github.com/sighonara/test_cSharp/issues/35)
+- **Configurable Settings**: Possibly based on environment. Possibly for testing or dev purposes. [#39](https://github.com/sighonara/test_cSharp/issues/39)
 
 ### DevOps & Deployment
 - **CI/CD Pipeline**: Automated build, test, and deployment [#30](https://github.com/sighonara/test_cSharp/issues/30)
