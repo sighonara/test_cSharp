@@ -152,6 +152,7 @@ cd test_cSharp.Tests && dotnet test
 - **Accessibility**: Compliance with the most recent standards [#23](https://github.com/sighonara/test_cSharp/issues/23)
 - **Localization**: Internationalization support (very low priority) [#24](https://github.com/sighonara/test_cSharp/issues/24)
 - **24-Hour Time**: Find and implement a real solution [#38](https://github.com/sighonara/test_cSharp/issues/38)
+- **Better Comparison Mode**: Gradient in the comparison between the two items. [#40](https://github.com/sighonara/test_cSharp/issues/40)
 
 ### Performance & Scalability
 - **Caching Strategy**: Redis or in-memory caching for frequently accessed data [#25](https://github.com/sighonara/test_cSharp/issues/25)
