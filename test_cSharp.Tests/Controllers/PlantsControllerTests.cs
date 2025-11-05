@@ -9,14 +9,13 @@ namespace test_cSharp.Tests.Controllers;
 
 public class PlantsControllerTests {
     private readonly Mock<PlantService> _mockPlantService;
-    private readonly Mock<ILogger<PlantsController>> _mockLogger;
     private readonly PlantsController _controller;
 
     public PlantsControllerTests() {
         var mockServiceLogger = new Mock<ILogger<PlantService>>();
         _mockPlantService = new Mock<PlantService>(mockServiceLogger.Object);
-        _mockLogger = new Mock<ILogger<PlantsController>>();
-        _controller = new PlantsController(_mockPlantService.Object, _mockLogger.Object);
+        var mockLogger = new Mock<ILogger<PlantsController>>();
+        _controller = new PlantsController(_mockPlantService.Object, mockLogger.Object);
     }
 
     [Fact]
@@ -29,7 +28,6 @@ public class PlantsControllerTests {
 
         var result = _controller.Get();
 
-        // Assert
         Assert.Equal(2, result.Count());
         Assert.Contains(result, p => p.Name == "Rose");
         Assert.Contains(result, p => p.Name == "Tulip");
