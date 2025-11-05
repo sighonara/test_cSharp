@@ -21,14 +21,12 @@ public class PlantsControllerTests {
 
     [Fact]
     public void Get_ReturnsAllPlants() {
-        // Arrange
         var plants = new List<Plant> {
-            new Plant { Name = "Rose", ScientificName = "Rosa", Habitat = "Garden", SomethingInteresting = "Beautiful" },
-            new Plant { Name = "Tulip", ScientificName = "Tulipa", Habitat = "Field", SomethingInteresting = "Colorful" }
+            new() { Name = "Rose", ScientificName = "Rosa", Habitat = "Garden", SomethingInteresting = "Beautiful" },
+            new() { Name = "Tulip", ScientificName = "Tulipa", Habitat = "Field", SomethingInteresting = "Colorful" }
         };
         _mockPlantService.Setup(s => s.Plants).Returns(plants);
 
-        // Act
         var result = _controller.Get();
 
         // Assert
@@ -39,7 +37,6 @@ public class PlantsControllerTests {
 
     [Fact]
     public void GetByName_ExistingPlant_ReturnsPlant() {
-        // Arrange
         var plant = new Plant {
             Name = "Rose",
             ScientificName = "Rosa",
@@ -48,29 +45,23 @@ public class PlantsControllerTests {
         };
         _mockPlantService.Setup(s => s.GetPlant("Rose")).Returns(plant);
 
-        // Act
         var result = _controller.Get("Rose");
 
-        // Assert
         var okResult = Assert.IsType<ActionResult<Plant>>(result);
         Assert.Equal(plant, okResult.Value);
     }
 
     [Fact]
     public void GetByName_NonExistingPlant_ReturnsNotFound() {
-        // Arrange
         _mockPlantService.Setup(s => s.GetPlant("NonExistent")).Returns((Plant?)null);
 
-        // Act
         var result = _controller.Get("NonExistent");
 
-        // Assert
         Assert.IsType<NotFoundResult>(result.Result);
     }
 
     [Fact]
     public void Post_ValidPlant_ReturnsCreatedAtAction() {
-        // Arrange
         var newPlant = new Plant {
             Name = "Daisy",
             ScientificName = "Bellis perennis",
@@ -79,10 +70,8 @@ public class PlantsControllerTests {
         };
         _mockPlantService.Setup(s => s.CreatePlant(newPlant));
 
-        // Act
         var result = _controller.Post(newPlant);
 
-        // Assert
         var createdResult = Assert.IsType<CreatedAtActionResult>(result.Result);
         Assert.Equal(nameof(_controller.Get), createdResult.ActionName);
         Assert.Equal(newPlant, createdResult.Value);
@@ -92,7 +81,6 @@ public class PlantsControllerTests {
 
     [Fact]
     public void Post_DuplicatePlant_ReturnsConflict() {
-        // Arrange
         var duplicatePlant = new Plant {
             Name = "Rose",
             ScientificName = "Rosa",
@@ -102,17 +90,14 @@ public class PlantsControllerTests {
         _mockPlantService.Setup(s => s.CreatePlant(duplicatePlant))
             .Throws(new InvalidOperationException("Plant already exists"));
 
-        // Act
         var result = _controller.Post(duplicatePlant);
 
-        // Assert
         var conflictResult = Assert.IsType<ConflictObjectResult>(result.Result);
         Assert.Equal("Plant already exists", conflictResult.Value);
     }
 
     [Fact]
     public void Put_ExistingPlant_ReturnsOk() {
-        // Arrange
         var updatedPlant = new Plant {
             Name = "Rose",
             ScientificName = "Rosa updated",
@@ -121,17 +106,14 @@ public class PlantsControllerTests {
         };
         _mockPlantService.Setup(s => s.UpdatePlant("Rose", updatedPlant));
 
-        // Act
         var result = _controller.Put("Rose", updatedPlant);
 
-        // Assert
         Assert.IsType<OkResult>(result);
         _mockPlantService.Verify(s => s.UpdatePlant("Rose", updatedPlant), Times.Once);
     }
 
     [Fact]
     public void Put_NonExistingPlant_ReturnsNotFound() {
-        // Arrange
         var plant = new Plant {
             Name = "NonExistent",
             ScientificName = "Test",
@@ -141,17 +123,14 @@ public class PlantsControllerTests {
         _mockPlantService.Setup(s => s.UpdatePlant("NonExistent", plant))
             .Throws(new KeyNotFoundException("Plant not found"));
 
-        // Act
         var result = _controller.Put("NonExistent", plant);
 
-        // Assert
         var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
         Assert.Equal("Plant not found", notFoundResult.Value);
     }
 
     [Fact]
     public void Put_RenameToExistingName_ReturnsConflict() {
-        // Arrange
         var plant = new Plant {
             Name = "Tulip",
             ScientificName = "Test",
@@ -161,36 +140,28 @@ public class PlantsControllerTests {
         _mockPlantService.Setup(s => s.UpdatePlant("Rose", plant))
             .Throws(new InvalidOperationException("Name already exists"));
 
-        // Act
         var result = _controller.Put("Rose", plant);
 
-        // Assert
         var conflictResult = Assert.IsType<ConflictObjectResult>(result);
         Assert.Equal("Name already exists", conflictResult.Value);
     }
 
     [Fact]
     public void Delete_ExistingPlant_ReturnsNoContent() {
-        // Arrange
         _mockPlantService.Setup(s => s.DeletePlant("Rose")).Returns(true);
 
-        // Act
         var result = _controller.Delete("Rose");
 
-        // Assert
         Assert.IsType<NoContentResult>(result);
         _mockPlantService.Verify(s => s.DeletePlant("Rose"), Times.Once);
     }
 
     [Fact]
     public void Delete_NonExistingPlant_ReturnsNotFound() {
-        // Arrange
         _mockPlantService.Setup(s => s.DeletePlant("NonExistent")).Returns(false);
 
-        // Act
         var result = _controller.Delete("NonExistent");
 
-        // Assert
         var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
         Assert.Contains("NonExistent", notFoundResult.Value?.ToString());
     }

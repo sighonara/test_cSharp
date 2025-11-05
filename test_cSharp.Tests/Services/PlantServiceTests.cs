@@ -5,12 +5,12 @@ using test_cSharp.Services;
 
 namespace test_cSharp.Tests.Services;
 
-// Test subclass that doesn't load from or save to file
+// Test class but don't load from or save to a file
 public class TestPlantService : PlantService {
     public TestPlantService(ILogger<PlantService> logger) : base(logger) { }
 
     protected override void LoadPlants() {
-        // Don't load from file during tests - start with empty collection
+        // Don't load from file during tests - start with an empty collection
     }
 
     protected override void SavePlants() {
@@ -26,16 +26,13 @@ public class PlantServiceTests {
 
     [Fact]
     public void Constructor_InitializesEmptyCollection_Successfully() {
-        // Arrange & Act
         var service = CreateService();
 
-        // Assert
         Assert.Empty(service.Plants);
     }
 
     [Fact]
     public void GetPlant_ExistingPlant_ReturnsPlant() {
-        // Arrange
         var service = CreateService();
         var testPlant = new Plant {
             Name = "Test Rose",
@@ -45,29 +42,23 @@ public class PlantServiceTests {
         };
         service.CreatePlant(testPlant);
 
-        // Act
         var result = service.GetPlant("Test Rose");
 
-        // Assert
         Assert.NotNull(result);
         Assert.Equal("Test Rose", result.Name);
     }
 
     [Fact]
     public void GetPlant_NonExistingPlant_ReturnsNull() {
-        // Arrange
         var service = CreateService();
 
-        // Act
         var result = service.GetPlant("NonExistentPlant12345");
 
-        // Assert
         Assert.Null(result);
     }
 
     [Fact]
     public void GetPlant_CaseInsensitive_ReturnsPlant() {
-        // Arrange
         var service = CreateService();
         var testPlant = new Plant {
             Name = "Tulip",
@@ -77,17 +68,14 @@ public class PlantServiceTests {
         };
         service.CreatePlant(testPlant);
 
-        // Act
         var result = service.GetPlant("TULIP");
 
-        // Assert
         Assert.NotNull(result);
         Assert.Equal("Tulip", result.Name);
     }
 
     [Fact]
     public void CreatePlant_NewPlant_AddsSuccessfully() {
-        // Arrange
         var service = CreateService();
         var newPlant = new Plant {
             Name = "Test Plant Unique 12345",
@@ -97,10 +85,8 @@ public class PlantServiceTests {
         };
         var initialCount = service.Plants.Count();
 
-        // Act
         service.CreatePlant(newPlant);
 
-        // Assert
         Assert.Equal(initialCount + 1, service.Plants.Count());
         var addedPlant = service.GetPlant(newPlant.Name);
         Assert.NotNull(addedPlant);
@@ -109,7 +95,6 @@ public class PlantServiceTests {
 
     [Fact]
     public void CreatePlant_DuplicateName_ThrowsInvalidOperationException() {
-        // Arrange
         var service = CreateService();
         var firstPlant = new Plant {
             Name = "Daisy",
@@ -126,14 +111,12 @@ public class PlantServiceTests {
             SomethingInteresting = "Different fact"
         };
 
-        // Act & Assert
         var exception = Assert.Throws<InvalidOperationException>(() => service.CreatePlant(duplicatePlant));
         Assert.Contains("Daisy", exception.Message);
     }
 
     [Fact]
     public void CreatePlant_DuplicateName_CaseInsensitive_ThrowsException() {
-        // Arrange
         var service = CreateService();
         var firstPlant = new Plant {
             Name = "Sunflower",
@@ -150,13 +133,11 @@ public class PlantServiceTests {
             SomethingInteresting = "Different fact"
         };
 
-        // Act & Assert
         Assert.Throws<InvalidOperationException>(() => service.CreatePlant(duplicatePlant));
     }
 
     [Fact]
     public void UpdatePlant_ExistingPlant_UpdatesSuccessfully() {
-        // Arrange
         var service = CreateService();
         var originalPlant = new Plant {
             Name = "Orchid",
@@ -173,10 +154,8 @@ public class PlantServiceTests {
             SomethingInteresting = "Updated fact"
         };
 
-        // Act
         service.UpdatePlant("Orchid", updatedPlant);
 
-        // Assert
         var result = service.GetPlant("Orchid");
         Assert.NotNull(result);
         Assert.Equal("Updated scientific name", result.ScientificName);
@@ -185,7 +164,6 @@ public class PlantServiceTests {
 
     [Fact]
     public void UpdatePlant_NonExistingPlant_ThrowsKeyNotFoundException() {
-        // Arrange
         var service = CreateService();
         var nonExistingPlant = new Plant {
             Name = "Non Existing Plant 12345",
@@ -194,14 +172,12 @@ public class PlantServiceTests {
             SomethingInteresting = "Test"
         };
 
-        // Act & Assert
         Assert.Throws<KeyNotFoundException>(() =>
             service.UpdatePlant("Non Existing Plant 12345", nonExistingPlant));
     }
 
     [Fact]
     public void UpdatePlant_RenameToExistingName_ThrowsInvalidOperationException() {
-        // Arrange
         var service = CreateService();
         var firstPlant = new Plant {
             Name = "Lily",
@@ -225,7 +201,6 @@ public class PlantServiceTests {
             SomethingInteresting = firstPlant.SomethingInteresting
         };
 
-        // Act & Assert
         var exception = Assert.Throws<InvalidOperationException>(() =>
             service.UpdatePlant("Lily", updatedPlant));
         Assert.Contains("Iris", exception.Message);
@@ -233,7 +208,6 @@ public class PlantServiceTests {
 
     [Fact]
     public void UpdatePlant_Rename_UpdatesSuccessfully() {
-        // Arrange
         var service = CreateService();
         var testPlant = new Plant {
             Name = "Rename Test Plant Original",
@@ -250,10 +224,8 @@ public class PlantServiceTests {
             SomethingInteresting = testPlant.SomethingInteresting
         };
 
-        // Act
         service.UpdatePlant("Rename Test Plant Original", renamedPlant);
 
-        // Assert
         Assert.Null(service.GetPlant("Rename Test Plant Original"));
         var result = service.GetPlant("Rename Test Plant New");
         Assert.NotNull(result);
@@ -262,7 +234,6 @@ public class PlantServiceTests {
 
     [Fact]
     public void DeletePlant_ExistingPlant_ReturnsTrue() {
-        // Arrange
         var service = CreateService();
         var testPlant = new Plant {
             Name = "Delete Test Plant",
@@ -273,10 +244,8 @@ public class PlantServiceTests {
         service.CreatePlant(testPlant);
         var countBefore = service.Plants.Count();
 
-        // Act
         var result = service.DeletePlant("Delete Test Plant");
 
-        // Assert
         Assert.True(result);
         Assert.Equal(countBefore - 1, service.Plants.Count());
         Assert.Null(service.GetPlant("Delete Test Plant"));
@@ -284,19 +253,15 @@ public class PlantServiceTests {
 
     [Fact]
     public void DeletePlant_NonExistingPlant_ReturnsFalse() {
-        // Arrange
         var service = CreateService();
 
-        // Act
         var result = service.DeletePlant("Non Existing Plant 12345");
 
-        // Assert
         Assert.False(result);
     }
 
     [Fact]
     public void DeletePlant_CaseInsensitive_DeletesSuccessfully() {
-        // Arrange
         var service = CreateService();
         var testPlant = new Plant {
             Name = "CaseSensitive Delete Test",
@@ -306,10 +271,8 @@ public class PlantServiceTests {
         };
         service.CreatePlant(testPlant);
 
-        // Act - Delete with different casing
         var result = service.DeletePlant("casesensitive delete test");
 
-        // Assert
         Assert.True(result);
         Assert.Null(service.GetPlant("CaseSensitive Delete Test"));
     }
